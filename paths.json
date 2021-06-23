@@ -1,0 +1,32 @@
+{
+	"firefox" : {
+		"windows" : "C:\\Program Files\\Mozilla Firefox\\application.ini", 
+		"macos"  : "/Applications/Firefox.app/Contents/Resources/application.ini",
+		"linux"   : "/usr/lib/firefox/application.ini"
+	},
+
+	"tor" : {
+		"windows" : "C:\\Program Files\\Tor Browser\\Browser\\application.ini",
+		"macos"  : "/Applications/Tor Browser.app/Contents/Resources/application.ini",
+		"linux"   : "/usr/lib/tor/application.ini"
+	},
+
+	"chrome" : {
+		"windows" : "C:\\Program Files (x86)\\Google\\Chrome\\Application",
+		"macos"  : "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/Current",
+		"linux"   : "~/.config/google-chrome/Default/Preferences"
+	},
+
+	"brave" : {
+		"windows" : "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application",
+		"macos"  : "/Applications/Brave Browser.app/Contents/Frameworks/Brave Browser Framework.framework/Versions",
+          
+		"linux"   : "~/.config/BraveSoftware/Brave-Browser/Default/Preferences"
+	},
+	
+	"edge" : {
+		"widnows" : "C:\\Program Files (x86)\\Microsoft\\Edge\\Application",
+		"macos"   : "/Applications/Microsoft Edge.app/Contents/Frameworks/Microsoft Edge Framework.framework/Versions/Current",
+		"linux"   : "~/.config/BraveSoftware/Brave-Browser/Default/Last Version"
+	}
+}
