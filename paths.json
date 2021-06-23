@@ -27,6 +27,6 @@
 	"edge" : {
 		"widnows" : "C:\\Program Files (x86)\\Microsoft\\Edge\\Application",
 		"macos"   : "/Applications/Microsoft Edge.app/Contents/Frameworks/Microsoft Edge Framework.framework/Versions/Current",
-		"linux"   : "~/.config/BraveSoftware/Brave-Browser/Default/Last Version"
+		"linux"   : "~/.config/microsoft-edge-dev/Default/Preferences"
 	}
 }

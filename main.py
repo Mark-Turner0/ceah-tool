@@ -1,7 +1,6 @@
 print("Importing libaries...",end='\t')
 from helpers import *
 import socket
-import psutil
 import platform
 import os
 import subprocess
@@ -52,7 +51,7 @@ def main():
         elif os == "windows": #Windows
             osVer = platform.platform()
         else: #Linux
-            osVer = subprocess.run(["uname","-v"], capture_output=True).stdout.decode()[:-1]
+            osVer = subprocess.run(["uname","-r"], capture_output=True).stdout.decode()[:-1]
         installed["osVer"] = osVer
         print("[OK]")
     except:
