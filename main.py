@@ -26,6 +26,7 @@ def firstRun():
                 unique += chr(random.randint(97,122))
             else:
                 unique += chr(random.randint(48,57))
+        os.mkdir("DO_NOT_DELETE")
         f = open("DO_NOT_DELETE/id.txt",'w')
         f.write(unique)
         f.close()
