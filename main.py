@@ -68,7 +68,9 @@ def main():
         
         for i in software.keys():
             try:
-                if i == "brave":
+                if oper == "macos":
+                    installed[i] = getMacVer(software.get(i)["macos"])
+                elif i == "brave":
                     installed[i] = getBrave(software.get(i)[oper])
                 elif i == "chrome" or i == "edge":
                     installed[i] = getChromium(software.get(i)[oper])

@@ -1,6 +1,12 @@
 import os
 import re
 
+def getMacVer(path):
+    f = open(path+"/Info.plist", 'r')
+    content = f.read()
+    f.close()
+    return re.search("<key>CFBundleShortVersionString<\/key>\n\t<string>(.*)<",content).groups()[0]
+
 def getChromium(path):
     if path.startswith("~"): #if os is linux
         path = path.replace('~',os.path.expanduser('~'))
@@ -8,8 +14,6 @@ def getChromium(path):
         content = f.read()
         f.close()
         return re.search('"last_chrome_version":"(.+?(?="))"',content).groups()[0]
-    if path.startswith("/Applications/"): #is os is macos
-        return os.readlink(path) #works via symlink to "Current" as being the latest installed
     return os.listdir(path)[0]
 
 def getBrave(path):
