@@ -1,11 +1,11 @@
 import os
 import re
 
-def getMacVer(path):
-    f = open(path+"/Info.plist", 'r')
+def getMacVer(appName):
+    f = open("/Applications/"+appName+".app/Contents/Info.plist",'r')
     content = f.read()
     f.close()
-    return re.search("<key>CFBundleShortVersionString<\/key>\n\t<string>(.*)<",content).groups()[0]
+    return re.search("<key>CFBundleShortVersionString<\/key>\n(.*)<string>(.*)<",content).groups()[1]
 
 def getChromium(path):
     if path.startswith("~"): #if os is linux
