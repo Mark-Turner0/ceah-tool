@@ -60,18 +60,18 @@ def main():
         onFail()
 
     print("Scanning software...",end='\t')
-    try:
-        if oper == "macos":
-            installed = getMacVer(installed)
-        elif oper == "windows":       
-            installed["Firefox"] = getFirefox()
-            installed["Chrome"] = getChromium()
-            installed = getWindowsVer(installed)
-        else:
-            installed = getLinuxVer(installed)
-        print("[OK]") 
-    except:
-        onFail()
+#    try:
+    if oper == "macos":
+        installed = getMacVer(installed)
+    elif oper == "windows":       
+        installed["Firefox"] = getFirefox()
+        installed["Chrome"] = getChromium()
+        installed = getWindowsVer(installed)
+    else:
+        installed = getLinuxVer(installed)
+    print("[OK]") 
+ #   except:
+       # onFail()
 
 
     print("Saving data...",end='\t')

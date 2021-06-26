@@ -2,12 +2,13 @@ import os
 import re
 import subprocess
 
-def getMacVer():
+def getMacVer(installed):
     for i in os.listdir("/Applications/"):
         try:
             if i.endswith(".app"):
                 i = i[:-4]
                 f = open("/Applications/"+i+".app/Contents/Info.plist",'r')
+                content = f.read()
                 f.close()
                 version = re.search("<key>CFBundleShortVersionString<\/key>\n(.*)<string>(.*)<",content).groups()[1]
                 installed[i] = version
