@@ -2,11 +2,19 @@ import os
 import re
 import subprocess
 
-def getMacVer(appName):
-    f = open("/Applications/"+appName+".app/Contents/Info.plist",'r')
-    content = f.read()
-    f.close()
-    return re.search("<key>CFBundleShortVersionString<\/key>\n(.*)<string>(.*)<",content).groups()[1]
+def getMacVer(installed):
+    for i in os.listdir("/Applications/"):
+        try:
+            if i.endswith(".app"):
+                i = i[:-4]
+                f = open("/Applications/"+i+".app/Contents/Info.plist",'r')
+                content = f.read()
+                f.close()
+                version = re.search("<key>CFBundleShortVersionString<\/key>\n(.*)<string>(.*)<",content).groups()[1]
+                installed[i] = version
+        except:
+            installed[i] = False
+    return installed 
 
 def getLinuxVer(installed):
     pkgmans = ["pacman","apt","dpkg"]
@@ -32,26 +40,30 @@ def getLinuxVer(installed):
             continue
     return installed
 
+def getWindowsVer(installed):
+    commands = ["powershell.exe Get-ItemProperty HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Format-List -Property DisplayName, DisplayVersion",
+            "powershell.exe Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Format-List -Property DisplayName, DisplayVersion"]
+    for command in commands:
+        results = subprocess.run(command.split(), capture_output=True).stdout.decode()[:-1].split("\r\n\r\n")[1:-1]
+        for i in results:
+            i = i.split("\r\n")
+            try:
+                name = i[0].split(": ")[-1]
+                if name != "":
+                    version = i[1].split(": ")[-1]
+                    installed[name] = version
+            except IndexError:
+                pass
+    return installed
 
-def getChromium(path):
-    if path.startswith("~"): #if os is linux
-        path = path.replace('~',os.path.expanduser('~'))
-        f = open(path,'r')
-        content = f.read()
-        f.close()
-        return re.search('"last_chrome_version":"(.+?(?="))"',content).groups()[0]
+
+def getChromium():
+    path = "C:\\Program Files (x86)\\Google\\Chrome\\Application"
     return os.listdir(path)[0]
 
-def getBrave(path):
-    if path.startswith("~"):
-        path = path.replace('~',os.path.expanduser('~'))
-        f = open(path,'r')
-        content = f.read()
-        f.close()
-        return re.search('"last_chrome_version":"(.+?(?="))"',content).groups()[0]
-    return os.listdir(path)[0]
 
-def getFirefox(path):
+def getFirefox():
+    path = "C:\\Program Files\\Mozilla Firefox\\application.ini" 
     f = open(path,'r')
     content = f.read() 
     f.close()
