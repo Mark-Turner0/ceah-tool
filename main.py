@@ -60,39 +60,18 @@ def main():
         onFail()
 
     print("Scanning software...",end='\t')
-   # try:
-    f = open("paths.json",'r')
-    software = f.read()
-    f.close()
-    software = json.loads(software)
-
-    if oper == "macos":
-        for i in os.listdir("/Applications/"):
-            try:
-                if i.endswith(".app"):
-                    i = i[:-4]
-                    installed[i] = getMacVer(i)
-            except:
-                installed[i] = False
-    elif oper == "windows":       
-        for i in software.keys():
-            try:
-                if i == "brave":
-                    installed[i] = getBrave(software.get(i)[oper])
-                elif i == "chrome" or i == "edge":
-                    installed[i] = getChromium(software.get(i)[oper])
-                elif i == "firefox" or i == "tor":
-                    installed[i] = getFirefox(software.get(i)[oper])
-                else:
-                    raise FileNotFoundError
-            except FileNotFoundError:
-                installed[i] = False
-    else:
+    try:
+        if oper == "macos":
+            installed = getMacVer(installed)
+        elif oper == "windows":       
+            installed["Firefox"] = getFirefox()
+            installed["Chrome"] = getChromium()
+            installed = getWindowsVer(installed)
+        else:
             installed = getLinuxVer(installed)
-    
-    print("[OK]") 
-    #except:
-       # onFail()
+        print("[OK]") 
+    except:
+        onFail()
 
 
     print("Saving data...",end='\t')
