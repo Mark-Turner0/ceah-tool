@@ -92,19 +92,23 @@ def main():
     try:
         print("Testing antivirus...",end="\t")
         if is_first and internet:
+            if oper == "windows":
                 error_code = os.system("scripts\\antivirustestnew.bat")
+            else:
+                error_code = subprocess.run(["sh","scripts/antivirustestnew.sh"]).returncode
         elif not internet:
                 print("[NO INTERNET]")
         else:
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustest.bat")
             else:
-                error_code = os.system("./eicar")
-        if error_code == 9009:
+                error_code = subprocess.run(["sh","scripts/antivirustest.sh"]).returncode
+
+        if error_code == 9009 or error_code == 127:
             installed["antivirus scanning"] = "deleted / quarantined"
-        elif error_code == 9020:
+        elif error_code == 9020 or error_code == 126:
             installed["antivirus scanning"] = "caught on execution"
-        elif error_code == 216:
+        elif error_code == 216 or error_code == 2:
             installed["antivirus scanning"] = "failed"
         else:
             installed["antivirus scanning"] = "unknown error "+str(error_code)
@@ -128,5 +132,3 @@ def main():
 if __name__ == '__main__':
     print("Importing libaries...",end='\t')
     main()
-
-
