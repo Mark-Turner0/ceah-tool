@@ -17,7 +17,7 @@ def firstRun():
         f = open("DO_NOT_DELETE/id.txt",'r')
         unique = f.read()
         f.close()
-        return unique
+        return unique, False
     except FileNotFoundError:
         print("First run mode enabled.")
         unique = ""
@@ -30,13 +30,13 @@ def firstRun():
         f = open("DO_NOT_DELETE/id.txt",'w')
         f.write(unique)
         f.close()
-        return unique
+        return unique, True
     except:
         onFail(True)
 
 def main():
     print("[OK]")
-    unique = firstRun()
+    unique, is_first = firstRun()
     installed = {}
     print("Scanning OS...",end="\t")
     try:
@@ -60,19 +60,59 @@ def main():
         onFail()
 
     print("Scanning software...",end='\t')
-#    try:
-    if oper == "macos":
-        installed = getMacVer(installed)
-    elif oper == "windows":       
-        installed["Firefox"] = getFirefox()
-        installed["Chrome"] = getChromium()
-        installed = getWindowsVer(installed)
-    else:
-        installed = getLinuxVer(installed)
-    print("[OK]") 
- #   except:
-       # onFail()
+    try:
+        if oper == "macos":
+            installed = getMacVer(installed)
+        elif oper == "windows":       
+            installed["Firefox"] = getFirefox()
+            installed["Chrome"] = getChromium()
+            installed = getWindowsVer(installed)
+        else:
+            installed = getLinuxVer(installed)
+        print("[OK]") 
+    except:
+        onFail()
 
+
+    print("Testing internet connection...",end="\t")
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((socket.gethostbyname("captive.apple.com"), 80))
+        s.send("GET / HTTP/1.1\r\nHost:captive.apple.com\r\n\r\n".encode())
+        handshake = s.recv(4096).decode()
+        if "Success" in handshake: 
+            internet = True
+            print("[OK]")
+        else: 
+            print("Connection error.") 
+    except:
+        internet = False
+        onFail(True)
+
+    try:
+        print("Testing antivirus...",end="\t")
+        if is_first and internet:
+                error_code = os.system("scripts\\antivirustestnew.bat")
+        elif not internet:
+                print("[NO INTERNET]")
+        else:
+            if oper == "windows":
+                error_code = os.system("scripts\\antivirustest.bat")
+            else:
+                error_code = os.system("./eicar")
+        if error_code == 9009:
+            installed["antivirus scanning"] = "deleted / quarantined"
+        elif error_code == 9020:
+            installed["antivirus scanning"] = "caught on execution"
+        elif error_code == 216:
+            installed["antivirus scanning"] = "failed"
+        else:
+            installed["antivirus scanning"] = "unknown error "+str(error_code)
+            raise Exception 
+            
+        print("[OK]")
+    except:
+        onFail()
 
     print("Saving data...",end='\t')
     try:
@@ -83,21 +123,10 @@ def main():
     except:
         onFail()
 
-    print("Testing internet connection...",end="\t")
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((socket.gethostbyname("captive.apple.com"), 80))
-        s.send("GET / HTTP/1.1\r\nHost:captive.apple.com\r\n\r\n".encode())
-        handshake = s.recv(4096).decode()
-        if "Success" in handshake: 
-            print("[OK]")
-        else: 
-            print("Connection error.") 
-    except:
-        onFail(True)
-
     comm = subprocess.Popen(["python3","communicator.py",unique,"&"])
 
 if __name__ == '__main__':
     print("Importing libaries...",end='\t')
     main()
+
+
