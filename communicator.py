@@ -5,7 +5,7 @@ import sys
 from main import onFail
 
 try:
-    print("Sending collected data...",end='\t')
+    print("Sending data...",end='\t')
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((socket.gethostname(), 1701))
     unique = sys.argv[1]
@@ -20,5 +20,9 @@ try:
     handshake = s.recv(4096).decode()
     if handshake == data: 
         print("[OK]")
-except ConnectionResetError:
+except ConnectionResetError as e:
     print("[SERVER CRASH]")
+    onFail(e, silent=True)
+except (TimeoutError, ConnectionRefusedError) as e:
+    print("[SERVER DOWN]")
+    onFail(e, silent=True)

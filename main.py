@@ -6,11 +6,19 @@ import subprocess
 import json
 import random
 
-def onFail(critical=False):
-	print("[FAIL]")
-	if critical: 
-		print("Critical Error! Exiting...")
-		exit(0)
+def onFail(err_msg, critical=False, silent=False):
+    if not silent:
+        print("[FAIL]")
+    try:
+        f = open("errors.log",'w')
+        f.write(str(err_msg))
+        f.close()
+    except:
+        critical = True
+	
+    if critical:
+        print("Critical Error! Exiting...")
+        exit(0)
 
 def firstRun():
     try:
@@ -31,20 +39,20 @@ def firstRun():
         f.write(unique)
         f.close()
         return unique, True
-    except:
-        onFail(True)
+    except Exception as e:
+        onFail(e, critical=True)
 
 def main():
     print("[OK]")
     unique, is_first = firstRun()
     installed = {}
-    print("Scanning OS...",end="\t")
+    print("Scanning OS...",end="\t\t")
     try:
         oper = platform.system().lower() if platform.system() != "Darwin" else "macos"
         installed["os"] = oper
         print("[OK]")
-    except:
-        onFail(True)
+    except Exception as e:
+        onFail(e, critical=True)
 
     print("Getting OS version...",end='\t')
     try:
@@ -56,8 +64,8 @@ def main():
             osVer = os.uname()[2]
         installed["osVer"] = osVer
         print("[OK]")
-    except:
-        onFail()
+    except Exception as e:
+        onFail(e)
 
     print("Scanning software...",end='\t')
     try:
@@ -70,11 +78,11 @@ def main():
         else:
             installed = getLinuxVer(installed)
         print("[OK]") 
-    except:
-        onFail()
+    except Exception as e:
+        onFail(e)
 
 
-    print("Testing internet connection...",end="\t")
+    print("Testing internet...",end="\t")
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((socket.gethostbyname("captive.apple.com"), 80))
@@ -85,9 +93,9 @@ def main():
             print("[OK]")
         else: 
             print("Connection error.") 
-    except:
+    except Exception as e:
         internet = False
-        onFail(True)
+        onFail(e, critical=True)
 
     try:
         print("Testing antivirus...",end="\t")
@@ -115,17 +123,17 @@ def main():
             raise Exception 
             
         print("[OK]")
-    except:
-        onFail()
+    except Exception as e:
+        onFail(e)
 
-    print("Saving data...",end='\t')
+    print("Saving data...",end='\t\t')
     try:
         f = open("data.json",'w')
         f.write(json.dumps(installed,indent='\t'))
         f.close()
         print("[OK]")
-    except:
-        onFail()
+    except Exception as e:
+        onFail(e)
 
     comm = subprocess.Popen(["python3","communicator.py",unique,"&"])
 
