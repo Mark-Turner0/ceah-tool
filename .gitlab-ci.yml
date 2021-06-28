@@ -28,3 +28,13 @@ lint:
   script:
     - pip install flake8
     - flake8 --ignore=E501 *.py
+
+build:
+  script:
+    - pip install pyinstaller
+    - pyinstaller --onefile -y main.py
+    - mv scripts dist
+
+  artifacts:
+    paths:
+      - dist
