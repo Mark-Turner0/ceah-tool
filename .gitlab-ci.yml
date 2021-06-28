@@ -36,37 +36,48 @@ build linux:
     - pyinstaller --onefile -y main.py
     - mv scripts dist
     - mv dist dist-linux
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
   artifacts:
     paths:
       - dist-linux
     expire_in: 1 week
 
-build macos:
-  stage: build
-  tags:
-    - osx
-  script:
-    - pip install pyinstaller
-    - pyinstaller --onefile -y main.py
-    - mv scripts dist
-    - mv dist dist-macos
-
-  artifacts:
-    paths:
-      - dist-macos
-    expire_in: 1 week
-
 build windows:
   stage: build
   tags:
     - windows
+  before_script:
+    - choco install -y python
+    - $env:PATH+=";C:\Python39;C:\Python39\Scripts"
+    - python -V  # Print out python version for debugging
+    - pip install virtualenv
+    - virtualenv venv
+    - venv\scripts\activate.bat
   script:
     - pip install pyinstaller
     - pyinstaller --onefile -y main.py
-    - mv scripts dist
-    - mv dist dist-windows
+    - move scripts dist/scripts
+    - move dist dist-windows
   artifacts:
     paths:
       - dist-windows
     expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+#build macos: -- COMMENTED UNTIL MACOS RUNNER IS SET UP
+#  stage: build
+#  tags: 
+#    - osx
+#  script:
+#    - pip install pyinstaller
+#    - pyinstaller --onefile -y main.py
+#    - mv scripts dist
+#    - mv dist dist-macos
+
+#  artifacts:
+#    paths:
+#      - dist-macos
+#    expire_in: 1 week
