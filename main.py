@@ -14,7 +14,7 @@ def onFail(err_msg, critical=False, silent=False):
         f = open("errors.log", 'w')
         f.write(str(err_msg))
         f.close()
-    except:
+    except Exception:
         critical = True
 
     if critical:
@@ -60,7 +60,7 @@ def main():
     print("Getting OS version...", end='\t')
     try:
         if oper == "macos":
-            osVer = subprocess.run(["sw_vers","-buildVersion"], capture_output=True).stdout.decode()[:-1]
+            osVer = subprocess.run(["sw_vers", "-buildVersion"], capture_output=True).stdout.decode()[:-1]
         elif oper == "windows":
             osVer = platform.platform()
         else:  # Linux
@@ -70,7 +70,7 @@ def main():
     except Exception as e:
         onFail(e)
 
-    print("Scanning software...",end='\t')
+    print("Scanning software...", end='\t')
     try:
         if oper == "macos":
             installed = getMacVer(installed)
@@ -83,7 +83,6 @@ def main():
         print("[OK]")
     except Exception as e:
         onFail(e)
-
 
     print("Testing internet...", end="\t")
     try:
@@ -122,7 +121,7 @@ def main():
         elif error_code == 216 or error_code == 2:
             installed["antivirus scanning"] = "failed"
         else:
-            installed["antivirus scanning"] = "unknown error "+str(error_code)
+            installed["antivirus scanning"] = "unknown error " + str(error_code)
             raise Exception
         print("[OK]")
     except Exception as e:
@@ -137,7 +136,7 @@ def main():
     except Exception as e:
         onFail(e)
 
-    subprocess.Popen(["python3","communicator.py",unique,"&"])
+    subprocess.Popen(["python3", "communicator.py", unique, "&"])
 
 
 if __name__ == '__main__':
