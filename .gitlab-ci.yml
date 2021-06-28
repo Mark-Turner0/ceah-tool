@@ -25,11 +25,15 @@ before_script:
   - source venv/bin/activate
 
 lint:
+  stage:
+    - test
   script:
     - pip install flake8
     - flake8 --ignore=E501 *.py
 
-build:
+build linux:
+  stage:
+    - build
   script:
     - pip install pyinstaller
     - pyinstaller --onefile -y main.py
@@ -38,3 +42,36 @@ build:
   artifacts:
     paths:
       - dist
+    expire_in: 
+      - 1 week
+
+build macos:
+  stage:
+    - build
+  tags:
+    - osx
+  script:
+    - pip install pyinstaller
+    - pyinstaller --onefile -y main.py
+    - mv scripts dist
+
+  artifacts:
+    paths:
+      - dist
+    expire_in: 
+      - 1 week
+
+build windows:
+  stage:
+    - build
+  tags:
+    - windows
+  script:
+    - pip install pyinstaller
+    - pyinstaller --onefile -y main.py
+    - mv scripts dist
+  artifacts:
+    paths:
+      - dist
+    expire_in: 
+      - 1 week
