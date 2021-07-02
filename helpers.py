@@ -1,6 +1,37 @@
 import os
 import re
 import subprocess
+import random
+import json
+
+
+def onFail(err_msg, critical=False, silent=False):
+    if not silent:
+        print("[FAIL]")
+    try:
+        f = open("errors.log", 'w')
+        f.write(str(err_msg))
+        f.close()
+    except Exception:
+        critical = True
+
+    if critical:
+        print("Critical Error! Exiting...")
+        exit(0)
+
+
+def notify(oper):
+    f = open("notif.txt", 'r')
+    ood = [line.strip() for line in f]
+    software = ood[random.randint(0, len(ood))-1]
+    f = open("data.json", 'r')
+    current = json.load(f)[software]
+    f = open("checked.json")
+    latest = json.load(f)[software]
+    f.close()
+    if oper == "macos":
+        os.system("osascript -e 'display notification \"from version " + current + " to version " + latest +
+                  "\" with title \" UPDATE " + software.upper() + "!\"'")
 
 
 def getMacVer(installed):
@@ -12,9 +43,9 @@ def getMacVer(installed):
                 content = f.read()
                 f.close()
                 version = re.search("<key>CFBundleShortVersionString</key>\n(.*)<string>(.*)<", content).groups()[1]
-                installed[i] = version
+                installed[i.lower()] = version
         except Exception:
-            installed[i] = False
+            installed[i.lower()] = False
     return installed
 
 
@@ -26,26 +57,33 @@ def getLinuxVer(installed):
                 results = subprocess.run("pacman -Q".split(), capture_output=True).stdout.decode()[:-1].split("\n")
                 for j in results:
                     j = j.split()
-                    installed[j[-2]] = j[-1]
+                    installed[j[-2].lower()] = j[-1]
             elif i == "apt":
                 results = subprocess.run("apt list --installed".split(), capture_output=True).stdout.decode()[:-1].split("\n")
                 for j in results:
                     name = j.split('/')[0]
                     version = j.split()[1]
-                    installed[name] = version
+                    installed[name.lower()] = version
             elif i == "dpkg":
                 results = subprocess.run("dpkg -l".split(), capture_output=True).stdout.decode()[:-1].split("\n")
                 for j in results:
                     j = j.split('\t')
-                    installed[j[-2]] = j[-1]
+                    installed[j[-2].lower()] = j[-1]
         except FileNotFoundError:
             continue
     return installed
 
 
 def getWindowsVer(installed):
-    commands = ["powershell.exe Get-ItemProperty HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Format-List -Property DisplayName, DisplayVersion",
-                "powershell.exe Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Format-List -Property DisplayName, DisplayVersion"]
+    commands = ["""
+                powershell.exe Get-ItemProperty
+                HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
+                Format-List -Property DisplayName, DisplayVersion""",
+
+                """powershell.exe Get-ItemProperty
+                HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
+                Format-List -Property DisplayName, DisplayVersion"""]
+
     for command in commands:
         results = subprocess.run(command.split(), capture_output=True).stdout.decode()[:-1].split("\r\n\r\n")[1:-1]
         for i in results:
@@ -54,7 +92,7 @@ def getWindowsVer(installed):
                 name = i[0].split(": ")[-1]
                 if name != "":
                     version = i[1].split(": ")[-1]
-                    installed[name] = version
+                    installed[name.lower()] = version
             except IndexError:
                 pass
     return installed

