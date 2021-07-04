@@ -23,15 +23,14 @@ def onFail(err_msg, critical=False, silent=False):
 def notify(oper):
     f = open("notif.txt", 'r')
     ood = [line.strip() for line in f]
-    software = ood[random.randint(0, len(ood))-1]
+    software = ood[random.randint(0, len(ood)) - 1]
     f = open("data.json", 'r')
     current = json.load(f)[software]
     f = open("checked.json")
     latest = json.load(f)[software]
     f.close()
     if oper == "macos":
-        os.system("osascript -e 'display notification \"from version " + current + " to version " + latest +
-                  "\" with title \" UPDATE " + software.upper() + "!\"'")
+        os.system("osascript -e 'display notification \"from version " + current + " to version " + latest + "\" with title \" UPDATE " + software.upper() + "!\"'")
 
 
 def getMacVer(installed):

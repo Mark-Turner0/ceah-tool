@@ -7,7 +7,7 @@ def communicate(unique):
     try:
         print("Sending data...", end='\t')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((socket.gethostname(), 1701))
+        s.connect((socket.gethostbyname("app.markturner.uk"), 1701))
         s.send(str("SYN " + unique).encode())
         assert s.recv(4096).decode() == "ACK " + unique
 
