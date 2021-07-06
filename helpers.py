@@ -32,7 +32,10 @@ def notify(oper):
         f.close()
         if oper == "macos":
             os.system("osascript -e 'display notification \"from version " + current + " to version " + latest + "\" with title \" UPDATE " + software.upper() + "!\"'")
-        elif oper == "linux":
+        elif oper == "windows":
+            from win10toast import ToastNotifier
+            ToastNotifier().show_toast("UPDATE " + software.upper(), "from version " + current + " to version " + latest)
+        else:
             os.system("notify-send 'UPDATE " + software.upper() + "' 'from version " + current + " to version " + latest + "'")
     except KeyError:
         print("Nothing to notify.")
