@@ -24,13 +24,16 @@ def notify(oper):
     f = open("notif.txt", 'r')
     ood = [line.strip() for line in f]
     software = ood[random.randint(0, len(ood)) - 1]
-    f = open("data.json", 'r')
-    current = json.load(f)[software]
-    f = open("checked.json")
-    latest = json.load(f)[software]
-    f.close()
-    if oper == "macos":
-        os.system("osascript -e 'display notification \"from version " + current + " to version " + latest + "\" with title \" UPDATE " + software.upper() + "!\"'")
+    try:
+        f = open("data.json", 'r')
+        current = json.load(f)[software]
+        f = open("checked.json")
+        latest = json.load(f)[software]
+        f.close()
+        if oper == "macos":
+            os.system("osascript -e 'display notification \"from version " + current + " to version " + latest + "\" with title \" UPDATE " + software.upper() + "!\"'")
+    except KeyError:
+        print("Nothing to notify.")
 
 
 def getMacVer(installed):
@@ -57,17 +60,17 @@ def getLinuxVer(installed):
                 for j in results:
                     j = j.split()
                     installed[j[-2].lower()] = j[-1]
+            elif i == "dpkg":
+                results = subprocess.run("dpkg -l".split(), capture_output=True).stdout.decode()[:-1].split("\n")[5:]
+                for j in results:
+                    j = j.split()
+                    installed[j[1].lower()] = j[2]
             elif i == "apt":
-                results = subprocess.run("apt list --installed".split(), capture_output=True).stdout.decode()[:-1].split("\n")
+                results = subprocess.run("apt list --installed".split(), capture_output=True).stdout.decode()[:-1].split("\n")[1:]
                 for j in results:
                     name = j.split('/')[0]
                     version = j.split()[1]
                     installed[name.lower()] = version
-            elif i == "dpkg":
-                results = subprocess.run("dpkg -l".split(), capture_output=True).stdout.decode()[:-1].split("\n")
-                for j in results:
-                    j = j.split('\t')
-                    installed[j[-2].lower()] = j[-1]
         except FileNotFoundError:
             continue
     return installed
