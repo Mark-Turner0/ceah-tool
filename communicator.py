@@ -1,13 +1,16 @@
 from helpers import onFail
 import socket
 import json
+import ssl
 
 
 def communicate(unique):
     try:
         print("Sending data...", end='\t')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        context = ssl.create_default_context()
         s.connect((socket.gethostbyname("app.markturner.uk"), 1701))
+        s = context.wrap_socket(s, server_hostname="app.markturner.uk")
         s.send(str("SYN " + unique).encode())
         assert s.recv(4096).decode() == "ACK " + unique
 
