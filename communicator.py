@@ -4,9 +4,18 @@ import json
 import ssl
 
 
+def recvLarge(s):
+    message = ""
+    while True:
+        buff = s.recv(4096).decode()
+        if buff == "EOF":
+            return message
+        message += buff
+
+
 def communicate(unique):
     try:
-        print("Sending data...", end='\t')
+        print("Sending data...", end='\t\t')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         context = ssl.create_default_context()
         s.connect((socket.gethostbyname("app.markturner.uk"), 1701))
@@ -18,12 +27,14 @@ def communicate(unique):
         data = f.read()
         f.close()
         s.send(data.encode())
-        assert s.recv(4096).decode() == data
+        s.send("EOF".encode())
+        assert recvLarge(s) == data
         s.send(str("ACK " + unique).encode())
         print("[OK]")
 
         print("Receiving response...", end='\t')
-        checked = json.loads(s.recv(4096).decode())
+        checked = recvLarge(s)
+        checked = json.loads(checked)
         s.send(str("ACK " + unique).encode())
         f = open("checked.json", 'w')
         f.write(json.dumps(checked, indent='\t'))
