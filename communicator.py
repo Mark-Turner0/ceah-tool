@@ -39,7 +39,7 @@ def communicate(unique):
 
         print("Checking firewalls...", end='\t')
         try:
-            network_firewall = checkFirewall()
+            checkFirewall()
             print("[OK]")
         except Exception as e:
             onFail(e)

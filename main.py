@@ -57,6 +57,18 @@ def main():
     except Exception as e:
         onFail(e)
 
+    print("Getting IP address...", end='\t')
+    try:
+        hostname = socket.gethostname()
+        ip_addr = socket.gethostbyname_ex(hostname)[2]
+        for i in ip_addr:
+            if i[:4] != "127.":
+                installed["ip_addr"] = i
+                break
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
     print("Scanning software...", end='\t')
     try:
         if oper == "macos":
