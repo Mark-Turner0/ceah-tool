@@ -83,6 +83,20 @@ def main():
     except Exception as e:
         onFail(e)
 
+    print("Getting firewall info...", end='\t')
+    try:
+        if oper == "macos":
+            state = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate"], capture_output=True).stdout.decode()[:-1]
+            if "enabled" in state:
+                installed["firewall_enabled"] = True
+                apps = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--listapps"], capture_output=True).stdout.decode()[:-1]
+                installed["firewall_rules"] = apps
+            else:
+                installed["firewall_enabled"] = False
+            print("[OK]")
+    except Exception as e:
+        onFail(e)
+
     print("Testing internet...", end="\t")
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
