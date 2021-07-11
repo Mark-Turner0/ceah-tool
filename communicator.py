@@ -4,6 +4,19 @@ import json
 import ssl
 
 
+def checkFirewall():
+    server = socket.socket()
+    server.bind(("0.0.0.0", 1701))
+    server.settimeout(20)
+    try:
+        server.listen(1)
+        conn, addr = server.accept()
+        if addr[0] == socket.gethostbyname("app.markturner.uk"):
+            return False
+    except socket.timeout:
+        return True
+
+
 def recvLarge(s):
     message = ""
     while True:
@@ -15,14 +28,23 @@ def recvLarge(s):
 
 def communicate(unique):
     try:
-        print("Sending data...", end='\t\t')
+        print("Connecting to server...", end='\t')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         context = ssl.create_default_context()
         s.connect((socket.gethostbyname("app.markturner.uk"), 1701))
         s = context.wrap_socket(s, server_hostname="app.markturner.uk")
         s.send(str("SYN " + unique).encode())
         assert s.recv(4096).decode() == "ACK " + unique
+        print("[OK]")
 
+        print("Checking firewalls...", end='\t')
+        try:
+            network_firewall = checkFirewall()
+            print("[OK]")
+        except Exception as e:
+            onFail(e)
+
+        print("Sending data...", end='\t\t')
         f = open("data.json", 'r')
         data = f.read()
         f.close()
