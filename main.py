@@ -93,6 +93,13 @@ def main():
                 installed["firewall_rules"] = apps
             else:
                 installed["firewall_enabled"] = False
+        elif oper == "windows":
+            state = subprocess.run(["netsh", "advfirewall", "show", "currentprofile"], capture_output=True).stdout.decode()[:-1]
+            if "OFF" in state:
+                installed["firewall_enabled"] = False
+            else:
+                installed["firewall_enabled"] = True
+                installed["firewall_rules"] = state
         else:
             state = subprocess.run(["ufw", "status", "verbose"], capture_output=True).stdout.decode()[:-1]
             if "inactive" in state:
@@ -100,7 +107,7 @@ def main():
             else:
                 installed["firewall_enabled"] = True
                 installed["firewall_rules"] = state
-            print("[OK]")
+        print("[OK]")
     except Exception as e:
         onFail(e)
 
