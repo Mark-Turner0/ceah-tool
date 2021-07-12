@@ -57,17 +57,6 @@ def main():
     except Exception as e:
         onFail(e)
 
-    print("Getting IP address...", end='\t')
-    try:
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname_ex(hostname)[2]
-        for i in ip_addr:
-            if i[:4] != "127.":
-                installed["ip_addr"] = i
-                break
-        print("[OK]")
-    except Exception as e:
-        onFail(e)
 
     print("Checking privileges...", end='\t')
     try:
@@ -141,6 +130,7 @@ def main():
         handshake = s.recv(4096).decode()
         if "Success" in handshake:
             internet = True
+            installed["ip_addr"] = s.getsockname()[0]
             print("[OK]")
         else:
             print("Connection error.")
