@@ -69,6 +69,23 @@ def main():
     except Exception as e:
         onFail(e)
 
+    print("Checking privileges...", end='\t')
+    try:
+        if oper == "windows":
+            import ctypes
+            if ctypes.windll.shell32.IsUserAnAdmin():
+                installed["root"] = True
+            else:
+                installed["root"] = False
+        else:
+            if not os.getuid():
+                installed["root"] = True
+            else:
+                installed["root"] = False
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
     print("Scanning software...", end='\t')
     try:
         if oper == "macos":
@@ -101,12 +118,17 @@ def main():
                 installed["firewall_enabled"] = True
                 installed["firewall_rules"] = state
         else:
-            state = subprocess.run(["ufw", "status", "verbose"], capture_output=True).stdout.decode()[:-1]
-            if "inactive" in state:
-                installed["firewall_enabled"] = False
-            else:
-                installed["firewall_enabled"] = True
-                installed["firewall_rules"] = state
+            try:
+                if not installed["root"]:
+                    raise FileNotFoundError
+                state = subprocess.run(["ufw", "status", "verbose"], capture_output=True).stdout.decode()[:-1]
+                if "inactive" in state:
+                    installed["firewall_enabled"] = False
+                else:
+                    installed["firewall_enabled"] = True
+                    installed["firewall_rules"] = state
+            except FileNotFoundError:
+                installed["firewall_enabled"] = "notdet"
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -126,8 +148,8 @@ def main():
         internet = False
         onFail(e, critical=True)
 
+    print("Testing antivirus...", end="\t")
     try:
-        print("Testing antivirus...", end="\t")
         if is_first and internet:
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustestnew.bat")
