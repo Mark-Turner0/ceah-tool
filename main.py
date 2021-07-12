@@ -57,6 +57,35 @@ def main():
     except Exception as e:
         onFail(e)
 
+    print("Getting IP address...", end='\t')
+    try:
+        hostname = socket.gethostname()
+        ip_addr = socket.gethostbyname_ex(hostname)[2]
+        for i in ip_addr:
+            if i[:4] != "127.":
+                installed["ip_addr"] = i
+                break
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
+    print("Checking privileges...", end='\t')
+    try:
+        if oper == "windows":
+            import ctypes
+            if ctypes.windll.shell32.IsUserAnAdmin():
+                installed["root"] = True
+            else:
+                installed["root"] = False
+        else:
+            if not os.getuid():
+                installed["root"] = True
+            else:
+                installed["root"] = False
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
     print("Scanning software...", end='\t')
     try:
         if oper == "macos":
@@ -67,6 +96,39 @@ def main():
             installed = getWindowsVer(installed)
         else:
             installed = getLinuxVer(installed)
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
+    print("Getting firewall info...", end='')
+    try:
+        if oper == "macos":
+            state = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate"], capture_output=True).stdout.decode()[:-1]
+            if "enabled" in state:
+                apps = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--listapps"], capture_output=True).stdout.decode()[:-1]
+                installed["firewall_enabled"] = True
+                installed["firewall_rules"] = apps
+            else:
+                installed["firewall_enabled"] = False
+        elif oper == "windows":
+            state = subprocess.run(["netsh", "advfirewall", "show", "currentprofile"], capture_output=True).stdout.decode()[:-1]
+            if "OFF" in state:
+                installed["firewall_enabled"] = False
+            else:
+                installed["firewall_enabled"] = True
+                installed["firewall_rules"] = state
+        else:
+            try:
+                if not installed["root"]:
+                    raise FileNotFoundError
+                state = subprocess.run(["ufw", "status", "verbose"], capture_output=True).stdout.decode()[:-1]
+                if "inactive" in state:
+                    installed["firewall_enabled"] = False
+                else:
+                    installed["firewall_enabled"] = True
+                    installed["firewall_rules"] = state
+            except FileNotFoundError:
+                installed["firewall_enabled"] = "notdet"
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -86,8 +148,8 @@ def main():
         internet = False
         onFail(e, critical=True)
 
+    print("Testing antivirus...", end="\t")
     try:
-        print("Testing antivirus...", end="\t")
         if is_first and internet:
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustestnew.bat")
