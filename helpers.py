@@ -21,22 +21,31 @@ def onFail(err_msg, critical=False, silent=False):
 
 
 def notify(oper):
-    f = open("notif.txt", 'r')
-    ood = [line.strip() for line in f]
-    software = ood[random.randint(0, len(ood)) - 1]
+    PATHTOICON = "icon.png"
+    url = "https://markturner.uk"
+    f = open("notif.json", 'r')
+    ood = json.load(f)
+    software = random.sample(ood.items(), 1)[0][0]
     try:
         f = open("data.json", 'r')
         current = json.load(f)[software]
         f = open("checked.json")
         latest = json.load(f)[software]
         f.close()
-        if oper == "macos":
-            os.system("osascript -e 'display notification \"from version " + current + " to version " + latest + "\" with title \" UPDATE " + software.upper() + "!\"'")
-        elif oper == "windows":
-            from win10toast import ToastNotifier
-            ToastNotifier().show_toast("UPDATE " + software.upper(), "from version " + current + " to version " + latest)
+        if ood[software] == "":
+            toShow = "from version " + current + " to version " + latest
         else:
-            os.system("notify-send 'UPDATE " + software.upper() + "' 'from version " + current + " to version " + latest + "'")
+            toShow = "Not sure how to do this? Click here!"
+            url = ood[software]
+        if oper == "macos":
+            import pync
+            pync.notify(toShow, title="UPDATE " + software.upper() + "!", open=url, appIcon=PATHTOICON)
+        elif oper == "windows":
+            from win10toast_click import ToastNotifier
+            import webbrowser
+            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=webbrowser.open_page(url))
+        else:
+            os.system("notify-send 'UPDATE " + software.upper() + "' '" + toShow + "'")
     except KeyError:
         print("Nothing to notify.")
 

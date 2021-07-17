@@ -62,11 +62,12 @@ def communicate(unique):
         f.write(json.dumps(checked, indent='\t'))
         f.close()
 
-        notif = s.recv(4096).decode()
-        f = open("notif.txt", 'w')
-        f.writelines(notif)
-        f.close()
+        notif = recvLarge(s)
+        notif = json.loads(notif)
         s.send(str("ACK " + unique).encode())
+        f = open("notif.json", 'w')
+        f.write(json.dumps(notif, indent='\t'))
+        f.close()
 
         assert s.recv(4096).decode() == "FIN " + unique
         s.send(str("FIN ACK " + unique).encode())
