@@ -57,7 +57,6 @@ def main():
     except Exception as e:
         onFail(e)
 
-
     print("Checking privileges...", end='\t')
     try:
         if oper == "windows":

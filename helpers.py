@@ -20,8 +20,14 @@ def onFail(err_msg, critical=False, silent=False):
         exit(0)
 
 
+def urlCallback():
+    import webbrowser
+    webbrowser.open_new(url)
+
+
 def notify(oper):
-    PATHTOICON = "icon.png"
+    PATHTOICON = "imgs/icon.png"
+    global url
     url = "https://markturner.uk"
     f = open("notif.json", 'r')
     ood = json.load(f)
@@ -42,8 +48,7 @@ def notify(oper):
             pync.notify(toShow, title="UPDATE " + software.upper() + "!", open=url, appIcon=PATHTOICON)
         elif oper == "windows":
             from win10toast_click import ToastNotifier
-            import webbrowser
-            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=webbrowser.open_page(url))
+            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=urlCallback)
         else:
             os.system("notify-send 'UPDATE " + software.upper() + "' '" + toShow + "'")
     except KeyError:
