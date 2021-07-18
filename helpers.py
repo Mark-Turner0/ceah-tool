@@ -3,6 +3,8 @@ import re
 import subprocess
 import random
 import json
+import asyncio
+import webbrowser
 
 
 def onFail(err_msg, critical=False, silent=False):
@@ -20,13 +22,21 @@ def onFail(err_msg, critical=False, silent=False):
         exit(0)
 
 
-def urlCallback():
-    import webbrowser
+def dismissedCallback():
+    f = open("notif.txt",'a')
+    f.write("\ndismissed")
+    f.close()
+
+
+def clickCallback():
+    f = open("notif.txt", 'a')
+    f.write("\nclicked")
+    f.close()
     webbrowser.open_new(url)
 
 
-def notify(oper):
-    PATHTOICON = "imgs/icon.png"
+async def notify(oper, toWait):
+    PATHTOICON = "imgs/logo.ico"
     global url
     url = "https://markturner.uk"
     f = open("notif.json", 'r')
@@ -37,20 +47,23 @@ def notify(oper):
         current = json.load(f)[software]
         f = open("checked.json")
         latest = json.load(f)[software]
+        f = open("notif.txt",'w')
+        f.write(software)
         f.close()
         if ood[software] == "":
             toShow = "from version " + current + " to version " + latest
         else:
             toShow = "Not sure how to do this? Click here!"
             url = ood[software]
-        if oper == "macos":
-            import pync
-            pync.notify(toShow, title="UPDATE " + software.upper() + "!", open=url, appIcon=PATHTOICON)
-        elif oper == "windows":
-            from win10toast_click import ToastNotifier
-            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=urlCallback)
+        if oper != "windows":
+            from desktop_notifier import DesktopNotifier
+            notify =  DesktopNotifier(app_name="Cyber Essentials at Home", app_icon=PATHTOICON)
+            await notify.send(title="UPDATE " + software.upper(), message=toShow,
+                    on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissCallback())
         else:
-            os.system("notify-send 'UPDATE " + software.upper() + "' '" + toShow + "'")
+            from win10toast_click import ToastNotifier
+            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=clickCallback)
+        await asyncio.sleep(toWait)
     except KeyError:
         print("Nothing to notify.")
 
