@@ -23,7 +23,7 @@ def onFail(err_msg, critical=False, silent=False):
 
 
 def dismissedCallback():
-    f = open("notif.txt",'a')
+    f = open("notif.txt", 'a')
     f.write("\ndismissed")
     f.close()
 
@@ -47,7 +47,7 @@ async def notify(oper, toWait):
         current = json.load(f)[software]
         f = open("checked.json")
         latest = json.load(f)[software]
-        f = open("notif.txt",'w')
+        f = open("notif.txt", 'w')
         f.write(software)
         f.close()
         if ood[software] == "":
@@ -57,9 +57,9 @@ async def notify(oper, toWait):
             url = ood[software]
         if oper != "windows":
             from desktop_notifier import DesktopNotifier
-            notify =  DesktopNotifier(app_name="Cyber Essentials at Home", app_icon=PATHTOICON)
+            notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon=PATHTOICON)
             await notify.send(title="UPDATE " + software.upper(), message=toShow,
-                    on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissCallback())
+                              on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissedCallback())
         else:
             from win10toast_click import ToastNotifier
             ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=clickCallback)
