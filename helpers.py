@@ -41,8 +41,8 @@ async def notify(oper, toWait):
     url = "https://markturner.uk"
     f = open("notif.json", 'r')
     ood = json.load(f)
-    software = random.sample(ood.items(), 1)[0][0]
     try:
+        software = random.sample(ood.items(), 1)[0][0]
         f = open("data.json", 'r')
         current = json.load(f)[software]
         f = open("checked.json")
@@ -63,12 +63,13 @@ async def notify(oper, toWait):
         else:
             from win10toast_click import ToastNotifier
             ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=clickCallback)
-        await asyncio.sleep(toWait)
-    except KeyError:
+    except ValueError:
         print("Nothing to notify.")
         f = open("notif.txt", 'w')
         f.write("False")
         f.close()
+    print("Sleeping...", end='\t\t')
+    await asyncio.sleep(toWait)
 
 
 def getMacVer(installed):
