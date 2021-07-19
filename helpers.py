@@ -66,6 +66,9 @@ async def notify(oper, toWait):
         await asyncio.sleep(toWait)
     except KeyError:
         print("Nothing to notify.")
+        f = open("notif.txt", 'w')
+        f.write("False")
+        f.close()
 
 
 def getMacVer(installed):

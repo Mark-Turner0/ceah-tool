@@ -170,7 +170,12 @@ def main():
         f = open("notif.txt")
         notif = [line.strip() for line in f]
         f.close()
+        if notif == ["False"]:
+            raise FileNotFoundError
         installed["notification"] = notif
+        print("[OK]")
+    except FileNotFoundError:
+        installed["notification"] = False
         print("[OK]")
     except Exception as e:
         onFail(e)
