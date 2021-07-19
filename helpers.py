@@ -36,33 +36,60 @@ def clickCallback():
 
 
 async def notify(oper, toWait):
-    PATHTOICON = "imgs/logo.ico"
     global url
     url = "https://markturner.uk"
     f = open("notif.json", 'r')
     ood = json.load(f)
     try:
         software = random.sample(ood.items(), 1)[0][0]
-        f = open("data.json", 'r')
-        current = json.load(f)[software]
-        f = open("checked.json")
-        latest = json.load(f)[software]
-        f = open("notif.txt", 'w')
-        f.write(software)
-        f.close()
-        if ood[software] == "":
-            toShow = "from version " + current + " to version " + latest
+
+        if software == "firewall":
+            title = "ENABLE YOUR FIREWALL!"
+            toShow = "Firewalls can help keep you safe!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+        elif software == "firewall_incorrect":
+            title = "RECONFIGURE YOUR FIREWALL!"
+            toShow = "A misconfigured firewall can be just as dangerous as not having one at all!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+        elif software == "antivirus":
+            title = "TURN ON YOUR ANTIVIRUS"
+            toShow = "Antivirus can protect you!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+        elif software == "access controls":
+            title = "CHECK YOUR ACCESS CONTROLS!"
+            toShow = "Proper configuration can prevent bad things from happening!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+
         else:
-            toShow = "Not sure how to do this? Click here!"
-            url = ood[software]
+            title = "UPDATE " + software.upper()
+            f = open("notif.txt", 'w')
+            f.write(software)
+            f.close()
+            if ood[software] == "":
+                f = open("data.json", 'r')
+                current = json.load(f)[software]
+                f = open("checked.json")
+                latest = json.load(f)[software]
+                f.close()
+                toShow = "from version " + current + " to version " + latest
+            else:
+                toShow = "Not sure how to do this? Click here!"
+                url = ood[software]
         if oper != "windows":
             from desktop_notifier import DesktopNotifier
-            notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon=PATHTOICON)
-            await notify.send(title="UPDATE " + software.upper(), message=toShow,
-                              on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissedCallback())
+            notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon="imgs/logo.ico")
+            await notify.send(title=title, message=toShow, on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissedCallback())
         else:
             from win10toast_click import ToastNotifier
-            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, icon_path="imgs\\logo.ico", callback_on_click=clickCallback)
+            ToastNotifier().show_toast(title, toShow, icon_path="imgs\\logo.ico", callback_on_click=clickCallback)
     except ValueError:
         print("Nothing to notify.")
         f = open("notif.txt", 'w')
