@@ -1,11 +1,11 @@
 from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail
+from screens import wxFirstRun
 from communicator import communicate
 import socket
 import platform
 import os
 import subprocess
 import json
-import random
 import asyncio
 
 
@@ -16,18 +16,7 @@ def firstRun():
         f.close()
         return unique, False
     except FileNotFoundError:
-        print("First run mode enabled.")
-        unique = ""
-        for i in range(7):
-            if random.randint(0, 1):
-                unique += chr(random.randint(97, 122))
-            else:
-                unique += chr(random.randint(48, 57))
-        os.mkdir("DO_NOT_DELETE")
-        f = open("DO_NOT_DELETE/id.txt", 'w')
-        f.write(unique)
-        f.close()
-        return unique, True
+        return wxFirstRun(), True
     except Exception as e:
         onFail(e, critical=True)
 
