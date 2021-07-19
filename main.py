@@ -6,7 +6,7 @@ import os
 import subprocess
 import json
 import random
-import time
+import asyncio
 
 
 def firstRun():
@@ -57,7 +57,6 @@ def main():
     except Exception as e:
         onFail(e)
 
-
     print("Checking privileges...", end='\t')
     try:
         if oper == "windows":
@@ -80,8 +79,8 @@ def main():
         if oper == "macos":
             installed = getMacVer(installed)
         elif oper == "windows":
-            installed["Firefox"] = getFirefox()
-            installed["Chrome"] = getChromium()
+            installed["firefox"] = getFirefox()
+            installed["google chrome"] = getChromium()
             installed = getWindowsVer(installed)
         else:
             installed = getLinuxVer(installed)
@@ -166,6 +165,21 @@ def main():
     except Exception as e:
         onFail(e)
 
+    print("Getting actions...", end='\t')
+    try:
+        f = open("notif.txt")
+        notif = [line.strip() for line in f]
+        f.close()
+        if notif == ["False"]:
+            raise FileNotFoundError
+        installed["notification"] = notif
+        print("[OK]")
+    except FileNotFoundError:
+        installed["notification"] = False
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
     print("Saving data...", end='\t\t')
     try:
         f = open("data.json", 'w')
@@ -175,12 +189,16 @@ def main():
     except Exception as e:
         onFail(e)
 
-    while True:
-        communicate(unique)
-        notify(oper)
-        time.sleep(600)
+    communicate(unique)
+
+    if oper == "macos":
+        from rubicon.objc.eventloop import EventLoopPolicy
+        asyncio.set_event_loop_policy(EventLoopPolicy())
+
+    asyncio.get_event_loop().run_until_complete(notify(oper, 3000))
 
 
 if __name__ == '__main__':
     print("Importing libaries...", end='\t')
-    main()
+    while True:
+        main()

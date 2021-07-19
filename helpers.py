@@ -3,6 +3,8 @@ import re
 import subprocess
 import random
 import json
+import asyncio
+import webbrowser
 
 
 def onFail(err_msg, critical=False, silent=False):
@@ -20,34 +22,81 @@ def onFail(err_msg, critical=False, silent=False):
         exit(0)
 
 
-def notify(oper):
-    PATHTOICON = "icon.png"
+def dismissedCallback():
+    f = open("notif.txt", 'a')
+    f.write("\ndismissed")
+    f.close()
+
+
+def clickCallback():
+    f = open("notif.txt", 'a')
+    f.write("\nclicked")
+    f.close()
+    webbrowser.open_new(url)
+
+
+async def notify(oper, toWait):
+    global url
     url = "https://markturner.uk"
     f = open("notif.json", 'r')
     ood = json.load(f)
-    software = random.sample(ood.items(), 1)[0][0]
     try:
-        f = open("data.json", 'r')
-        current = json.load(f)[software]
-        f = open("checked.json")
-        latest = json.load(f)[software]
-        f.close()
-        if ood[software] == "":
-            toShow = "from version " + current + " to version " + latest
+        software = random.sample(ood.items(), 1)[0][0]
+
+        if software == "firewall":
+            title = "ENABLE YOUR FIREWALL!"
+            toShow = "Firewalls can help keep you safe!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+        elif software == "firewall_incorrect":
+            title = "RECONFIGURE YOUR FIREWALL!"
+            toShow = "A misconfigured firewall can be just as dangerous as not having one at all!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+        elif software == "antivirus":
+            title = "TURN ON YOUR ANTIVIRUS"
+            toShow = "Antivirus can protect you!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+        elif software == "access controls":
+            title = "CHECK YOUR ACCESS CONTROLS!"
+            toShow = "Proper configuration can prevent bad things from happening!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software]
+
         else:
-            toShow = "Not sure how to do this? Click here!"
-            url = ood[software]
-        if oper == "macos":
-            import pync
-            pync.notify(toShow, title="UPDATE " + software.upper() + "!", open=url, appIcon=PATHTOICON)
-        elif oper == "windows":
+            title = "UPDATE " + software.upper()
+            f = open("notif.txt", 'w')
+            f.write(software)
+            f.close()
+            if ood[software] == "":
+                f = open("data.json", 'r')
+                current = json.load(f)[software]
+                f = open("checked.json")
+                latest = json.load(f)[software]
+                f.close()
+                toShow = "from version " + current + " to version " + latest
+            else:
+                toShow = "Not sure how to do this? Click here!"
+                url = ood[software]
+        if oper != "windows":
+            from desktop_notifier import DesktopNotifier
+            notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon="imgs/logo.ico")
+            await notify.send(title=title, message=toShow, on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissedCallback())
+        else:
             from win10toast_click import ToastNotifier
-            import webbrowser
-            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=webbrowser.open_page(url))
-        else:
-            os.system("notify-send 'UPDATE " + software.upper() + "' '" + toShow + "'")
-    except KeyError:
+            ToastNotifier().show_toast(title, toShow, icon_path="imgs\\logo.ico", callback_on_click=clickCallback)
+    except ValueError:
         print("Nothing to notify.")
+        f = open("notif.txt", 'w')
+        f.write("False")
+        f.close()
+    print("Sleeping...", end='\t\t')
+    await asyncio.sleep(toWait)
 
 
 def getMacVer(installed):
