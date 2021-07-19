@@ -62,7 +62,7 @@ async def notify(oper, toWait):
                               on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissedCallback())
         else:
             from win10toast_click import ToastNotifier
-            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, callback_on_click=clickCallback)
+            ToastNotifier().show_toast("UPDATE " + software.upper(), toShow, icon_path="imgs\\logo.ico", callback_on_click=clickCallback)
     except ValueError:
         print("Nothing to notify.")
         f = open("notif.txt", 'w')
