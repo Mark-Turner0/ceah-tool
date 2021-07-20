@@ -6,6 +6,7 @@ DO_NOT_DELETE/
 build/
 dist/
 *.spec
+resources/*.exe
 CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY*
 errors.log
 checked.json

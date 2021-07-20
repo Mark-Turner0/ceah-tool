@@ -3,6 +3,7 @@ import wx
 import os
 import socket
 import ssl
+import sys
 
 
 class setup(wx.Frame):
@@ -17,7 +18,7 @@ class setup(wx.Frame):
 
     def initUI(self):
         vert = wx.BoxSizer(wx.VERTICAL)
-        label = "Please enter your unique code that was sent to you in the email with the download link:\n"
+        label = " Please enter your unique code that was sent to you in the email with the download link: \n"
         error_label = "Error: Invalid code! Check that this is right and if so, please try again later."
         vert.Add(wx.StaticText(self.panel, label=label), 0, wx.ALIGN_CENTER, 0)
         self.answerBox = wx.TextCtrl(self.panel)
@@ -36,6 +37,7 @@ class setup(wx.Frame):
     def onSubmit(self, e):
         unique = self.answerBox.GetValue()
         if validate(unique):
+            self.error.SetLabel("")
             os.mkdir(getPath("DO_NOT_DELETE"))
             f = open(getPath("DO_NOT_DELETE/id.txt"), 'w')
             f.write(unique)
@@ -64,6 +66,6 @@ def wxFirstRun():
         app = wx.App()
         setup()
         app.MainLoop()
-        exit(0)
+        sys.exit(0)
     except Exception as e:
         onFail(e, critical=True)

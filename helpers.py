@@ -27,7 +27,7 @@ def onFail(err_msg, critical=False, silent=False):
 
     if critical:
         print("Critical Error! Exiting...")
-        exit(0)
+        sys.exit(0)
 
 
 def dismissedCallback():

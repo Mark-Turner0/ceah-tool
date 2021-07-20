@@ -20,6 +20,12 @@ jobs:
         - choco install python3 --params "/InstallDir:C:\\Python"
         - export PATH="/c/Python:/c/Python/Scripts:$PATH"
         - python -m pip install --upgrade pip
+        - choco install nsis
+        - export PATH="/c/Program Files (x86)/NSIS:$PATH"
+      script:
+        - python3 -m PyInstaller main.py -n "Cyber Essentials at Home" --add-data "scripts;scripts" --add-data "imgs;imgs" -w -i imgs/logo.ico --uac-admin
+        - cd resources
+        - makensis installer.nsi
 
 install:
 - pip3 install --upgrade pip  # all three OSes agree about 'pip3'
