@@ -4,7 +4,7 @@
 Name "Cyber Essentials at Home Installer"
 OutFile "Cyber Essentials at Home Installer.exe"
 Unicode True
-InstallDir "$PROGRAMFILES64\Cyber Essentials at Home"
+InstallDir "$LocalAppdata\Programs\Cyber Essentials at Home"
 
 ;License text
 LicenseData "license.html"
@@ -18,7 +18,7 @@ LicenseData "license.html"
 VIProductVersion "1.0"
 
 ;Allow write to registries
-RequestExecutionLevel admin
+RequestExecutionLevel user
 
 
 ;Welcome Page settings
@@ -74,12 +74,16 @@ Section "Install"
 
   ;Write registries so it shows up in "Add / Remove Programs"
   SetRegView 64
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "DisplayName" "Cyber Essentials at Home"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "UninstallString" "$\"$INSTDIR\Cyber Essentials at Home Uninstaller.exe$\""
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "DisplayIcon" "$\"$INSTDIR\imgs\logo.ico$\""
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "DisplayVersion" "1.0"
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "NoModify" "1"
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "EstimatedSize" "46000"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "DisplayName" "Cyber Essentials at Home"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "UninstallString" "$\"$INSTDIR\Cyber Essentials at Home Uninstaller.exe$\""
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "DisplayIcon" "$\"$INSTDIR\imgs\logo.ico$\""
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "DisplayVersion" "1.0"
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "NoModify" "1"
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home" "EstimatedSize" "46000"
+
+  ;Make sure program runs on startup
+  SetShellVarContext current
+  CreateShortcut "$SMSTARTUP\Cyber Essentials at Home.lnk" "$INSTDIR\Cyber Essentials at Home.exe"
 
   ;Create Uninstaller
   WriteUninstaller "$INSTDIR\Cyber Essentials at Home Uninstaller.exe"
@@ -100,6 +104,11 @@ Section "Uninstall"
 
 	;Delete registries
 	SetRegView 64
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home"
+	DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Cyber Essentials at Home"
+	DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Run\Cyber Essentials at Home"
+
+	;Delete startup link
+	SetShellVarContext current
+	Delete "$SMSTARTUP\Cyber Essentials at Home.lnk"
 
 SectionEnd

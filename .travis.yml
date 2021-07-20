@@ -23,7 +23,7 @@ jobs:
         - choco install nsis
         - export PATH="/c/Program Files (x86)/NSIS:$PATH"
       script:
-        - python3 -m PyInstaller main.py -n "Cyber Essentials at Home" --add-data "scripts;scripts" --add-data "imgs;imgs" -w -i imgs/logo.ico --uac-admin
+        - pyinstaller main.py -n "Cyber Essentials at Home" --add-data "scripts;scripts" --add-data "imgs;imgs" -w -i imgs/logo.ico
         - cd resources
         - makensis installer.nsi
 
