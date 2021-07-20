@@ -1,4 +1,4 @@
-from helpers import onFail
+from helpers import onFail, getPath
 import wx
 import os
 import socket
@@ -36,8 +36,8 @@ class setup(wx.Frame):
     def onSubmit(self, e):
         unique = self.answerBox.GetValue()
         if validate(unique):
-            os.mkdir("DO_NOT_DELETE")
-            f = open("DO_NOT_DELETE/id.txt", 'w')
+            os.mkdir(getPath("DO_NOT_DELETE"))
+            f = open(getPath("DO_NOT_DELETE/id.txt"), 'w')
             f.write(unique)
             f.close()
             self.Close()
@@ -64,10 +64,6 @@ def wxFirstRun():
         app = wx.App()
         setup()
         app.MainLoop()
-        f = open("DO_NOT_DELETE/id.txt")
-        unique = f.read()
-        f.close()
-        print("[OK]")
-        return unique
+        exit(0)
     except Exception as e:
         onFail(e, critical=True)

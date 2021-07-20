@@ -3,6 +3,9 @@ log.txt
 data.json
 __pycache__/
 DO_NOT_DELETE/
+build/
+dist/
+*.spec
 CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY*
 errors.log
 checked.json

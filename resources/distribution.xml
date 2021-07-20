@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Cyber Essentials at Home</title>
+    <license language="en" mime-type="text/html"><![CDATA[
+    <html><body><b>BY USING THIS SOFTWARE YOU AGREE TO THE FOLLOWING:</b><ul>
+			<li>Test 1</li>
+			<li>Test 2</li>
+			<li>Test 3</li>
+    </ul></body></html>
+    ]]></license>
+    <pkg-ref id="uk.markturner.ceah-tool"/>
+    <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="uk.markturner.ceah-tool"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="uk.markturner.ceah-tool" visible="false">
+        <pkg-ref id="uk.markturner.ceah-tool"/>
+    </choice>
+    <pkg-ref id="uk.markturner.ceah-tool" version="0" onConclusion="none">component.pkg</pkg-ref>
+</installer-gui-script>
