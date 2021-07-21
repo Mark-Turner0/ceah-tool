@@ -4,3 +4,5 @@ su $USER -c "launchctl unload ~/Library/LaunchAgents/ceah-agent.plist"
 su $USER -c "cp /Applications/Cyber\ Essentials\ at\ Home.app/Contents/Resources/scripts/ceah-agent.plist ~/Library/LaunchAgents/ceah-agent.plist"
 su $USER -c "launchctl load ~/Library/LaunchAgents/ceah-agent.plist"
 su $USER -c "launchctl start uk.markturner.ceah-agent"
+sleep 2
+osascript -e 'tell application "Cyber Essentials at Home" to activate'
