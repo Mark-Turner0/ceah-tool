@@ -7,6 +7,7 @@ import os
 import subprocess
 import json
 import asyncio
+import psutil
 
 
 def firstRun():
@@ -150,6 +151,26 @@ def main():
         else:
             installed["antivirus scanning"] = "unknown error " + str(error_code)
             raise Exception
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
+    print("Checking access ctrls...", end='')
+    try:
+        processes = []
+        if oper != "windows":
+            username = os.environ.get("USER")
+            adminCheck = subprocess.run(["id", "-G", username], capture_output=True).stdout.decode()[:-1]
+            if "80 " in adminCheck:
+                installed["isAdmin"] = True
+            else:
+                installed["isAdmin"] = False
+        else:
+            username = "Bill Gates"
+        for proc in psutil.process_iter():
+            if proc.username() in [username, "root"]:
+                processes.append({proc.name(): proc.username()})
+        installed["processes"] = processes
         print("[OK]")
     except Exception as e:
         onFail(e)

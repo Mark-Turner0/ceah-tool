@@ -5,6 +5,7 @@ __pycache__/
 DO_NOT_DELETE/
 build/
 dist/
+ceah-tool/
 *.spec
 resources/*.exe
 CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY*
