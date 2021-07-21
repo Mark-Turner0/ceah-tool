@@ -1,4 +1,4 @@
-from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath
+from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath, getUAC
 from screens import wxFirstRun
 from communicator import communicate
 import socket
@@ -157,7 +157,7 @@ def main():
 
     print("Checking access ctrls...", end='')
     try:
-        processes = []
+
         if oper != "windows":
             username = os.environ.get("USER")
             adminCheck = subprocess.run(["id", "-G", username], capture_output=True).stdout.decode()[:-1]
@@ -165,8 +165,12 @@ def main():
                 installed["isAdmin"] = True
             else:
                 installed["isAdmin"] = False
+            installed["UAC"] = "unix"
         else:
             installed["isAdmin"] = "windows"
+            installed["UAC"] = getUAC()
+
+        processes = []
         for proc in psutil.process_iter():
             if oper == "windows" or proc.username() in [username, "root"]:
                 try:

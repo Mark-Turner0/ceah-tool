@@ -185,3 +185,15 @@ def getFirefox():
     content = f.read()
     f.close()
     return re.search("Version=(.*)", content).groups()[0]
+
+
+def getUAC():
+    command = "powershell.exe Get-ItemProperty -Path HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
+    results = subprocess.run(command.split(), capture_output=True).stdout.decode()[:-1].split("\r\n")[2:-10]
+    uac = {}
+    for i in results:
+        keyValue = i.split(':')
+        key = keyValue[0].replace(' ', "")
+        value = keyValue[1][-1]
+        uac[key] = value
+    return uac
