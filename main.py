@@ -166,10 +166,20 @@ def main():
             else:
                 installed["isAdmin"] = False
         else:
-            username = "Bill Gates"
+            installed["isAdmin"] = "windows"
         for proc in psutil.process_iter():
-            if proc.username() in [username, "root"]:
-                processes.append({proc.name(): proc.username()})
+            if oper == "windows" or proc.username() in [username, "root"]:
+                try:
+                    pusername = proc.username()
+                    try:
+                        proc.memory_maps()
+                        processes.append({proc.name(): pusername})
+                    except psutil.AccessDenied:
+                        if "SYSTEM" in pusername:
+                            raise psutil.AccessDenied
+                        processes.append({proc.name(): "UAC Elevated"})
+                except psutil.AccessDenied:
+                    processes.append({proc.name(): "Windows System"})
         installed["processes"] = processes
         print("[OK]")
     except Exception as e:

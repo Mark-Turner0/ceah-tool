@@ -7,7 +7,7 @@ jobs:
       osx_image: xcode12.5  # Python 3.x.x running on macOS 11.3
       language: shell       # 'language: python' is an error on Travis CI macOS
       script:
-        - pip3 install -r requirements_unix.txt
+        - pip3 install -r requirements_mac.txt
         - pyinstaller main.py -n "Cyber Essentials at Home" --add-data scripts:scripts --add-data imgs:imgs -w -i imgs/logo.ico --version-file 0.1 --osx-bundle-identifier uk.markturner.ceah-tool
         - chmod +x resources/postinstall
         - cd dist
@@ -25,6 +25,7 @@ jobs:
         - choco install nsis
         - export PATH="/c/Program Files (x86)/NSIS:$PATH"
       script:
+        - python -m pip install -r requirements_windows.txt
         - pyinstaller main.py -n "Cyber Essentials at Home" --add-data "scripts;scripts" --add-data "imgs;imgs" -w -i imgs/logo.ico
         - cd resources
         - makensis installer.nsi
