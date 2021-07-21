@@ -167,7 +167,13 @@ def main():
                 installed["isAdmin"] = False
             installed["UAC"] = "unix"
         else:
-            installed["isAdmin"] = "windows"
+            username = subprocess.run(["whoami"], capture_output=True).stdout.decode()[:-1]
+            print(username)
+            adminCheck = subprocess.run(["net", "user", username.split("\\")[-1]], capture_output=True).stdout.decode()[:-1]
+            if "*Administrators" in adminCheck:
+                installed["isAdmin"] = True
+            else:
+                installed["isAdmin"] = False
             installed["UAC"] = getUAC()
 
         processes = []
@@ -179,7 +185,7 @@ def main():
                         proc.memory_maps()
                         processes.append({proc.name(): pusername})
                     except psutil.AccessDenied:
-                        if "SYSTEM" in pusername:
+                        if username.lower() not in pusername.lower():
                             raise psutil.AccessDenied
                         processes.append({proc.name(): "UAC Elevated"})
                 except psutil.AccessDenied:
