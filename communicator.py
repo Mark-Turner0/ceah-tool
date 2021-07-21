@@ -1,4 +1,4 @@
-from helpers import onFail
+from helpers import onFail, getPath
 import socket
 import json
 import ssl
@@ -45,7 +45,7 @@ def communicate(unique):
             onFail(e)
 
         print("Sending data...", end='\t\t')
-        f = open("data.json", 'r')
+        f = open(getPath("data.json"), 'r')
         data = f.read()
         f.close()
         s.send(data.encode())
@@ -58,14 +58,14 @@ def communicate(unique):
         checked = recvLarge(s)
         checked = json.loads(checked)
         s.send(str("ACK " + unique).encode())
-        f = open("checked.json", 'w')
+        f = open(getPath("checked.json"), 'w')
         f.write(json.dumps(checked, indent='\t'))
         f.close()
 
         notif = recvLarge(s)
         notif = json.loads(notif)
         s.send(str("ACK " + unique).encode())
-        f = open("notif.json", 'w')
+        f = open(getPath("notif.json"), 'w')
         f.write(json.dumps(notif, indent='\t'))
         f.close()
 

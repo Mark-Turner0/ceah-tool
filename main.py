@@ -1,33 +1,22 @@
-from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail
+from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath
+from screens import wxFirstRun
 from communicator import communicate
 import socket
 import platform
 import os
 import subprocess
 import json
-import random
 import asyncio
 
 
 def firstRun():
     try:
-        f = open("DO_NOT_DELETE/id.txt", 'r')
+        f = open(getPath("DO_NOT_DELETE/id.txt"), 'r')
         unique = f.read()
         f.close()
         return unique, False
     except FileNotFoundError:
-        print("First run mode enabled.")
-        unique = ""
-        for i in range(7):
-            if random.randint(0, 1):
-                unique += chr(random.randint(97, 122))
-            else:
-                unique += chr(random.randint(48, 57))
-        os.mkdir("DO_NOT_DELETE")
-        f = open("DO_NOT_DELETE/id.txt", 'w')
-        f.write(unique)
-        f.close()
-        return unique, True
+        return wxFirstRun(), True
     except Exception as e:
         onFail(e, critical=True)
 
@@ -143,7 +132,7 @@ def main():
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustestnew.bat")
             else:
-                error_code = subprocess.run(["sh", "scripts/antivirustestnew.sh"]).returncode
+                error_code = subprocess.run(["sh", getPath("scripts/antivirustestnew.sh")]).returncode
         elif not internet:
             print("[NO INTERNET]")
         else:
@@ -167,7 +156,7 @@ def main():
 
     print("Getting actions...", end='\t')
     try:
-        f = open("notif.txt")
+        f = open(getPath("notif.txt"))
         notif = [line.strip() for line in f]
         f.close()
         if notif == ["False"]:
@@ -182,7 +171,7 @@ def main():
 
     print("Saving data...", end='\t\t')
     try:
-        f = open("data.json", 'w')
+        f = open(getPath("data.json"), 'w')
         f.write(json.dumps(installed, indent='\t'))
         f.close()
         print("[OK]")

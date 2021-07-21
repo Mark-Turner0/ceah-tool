@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import subprocess
 import random
 import json
@@ -7,11 +8,18 @@ import asyncio
 import webbrowser
 
 
+def getPath(path):
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        current = os.path.abspath(os.path.dirname(__file__))
+        return os.path.join(current, path)
+    return path
+
+
 def onFail(err_msg, critical=False, silent=False):
     if not silent:
         print("[FAIL]")
     try:
-        f = open("errors.log", 'w')
+        f = open(getPath("errors.log"), 'w')
         f.write(str(err_msg))
         f.close()
     except Exception:
@@ -19,17 +27,17 @@ def onFail(err_msg, critical=False, silent=False):
 
     if critical:
         print("Critical Error! Exiting...")
-        exit(0)
+        sys.exit(0)
 
 
 def dismissedCallback():
-    f = open("notif.txt", 'a')
+    f = open(getPath("notif.txt"), 'a')
     f.write("\ndismissed")
     f.close()
 
 
 def clickCallback():
-    f = open("notif.txt", 'a')
+    f = open(getPath("notif.txt"), 'a')
     f.write("\nclicked")
     f.close()
     webbrowser.open_new(url)
@@ -38,8 +46,9 @@ def clickCallback():
 async def notify(oper, toWait):
     global url
     url = "https://markturner.uk"
-    f = open("notif.json", 'r')
+    f = open(getPath("notif.json"), 'r')
     ood = json.load(f)
+    f.close()
     try:
         software = random.sample(ood.items(), 1)[0][0]
 
@@ -70,13 +79,13 @@ async def notify(oper, toWait):
 
         else:
             title = "UPDATE " + software.upper()
-            f = open("notif.txt", 'w')
+            f = open(getPath("notif.txt"), 'w')
             f.write(software)
             f.close()
             if ood[software] == "":
-                f = open("data.json", 'r')
+                f = open(getPath("data.json"), 'r')
                 current = json.load(f)[software]
-                f = open("checked.json")
+                f = open(getPath("checked.json"))
                 latest = json.load(f)[software]
                 f.close()
                 toShow = "from version " + current + " to version " + latest
@@ -85,16 +94,18 @@ async def notify(oper, toWait):
                 url = ood[software]
         if oper != "windows":
             from desktop_notifier import DesktopNotifier
-            notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon="imgs/logo.ico")
+            notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon=getPath("imgs/logo.ico"))
             await notify.send(title=title, message=toShow, on_clicked=lambda: clickCallback(), on_dismissed=lambda: dismissedCallback())
         else:
             from win10toast_click import ToastNotifier
             ToastNotifier().show_toast(title, toShow, icon_path="imgs\\logo.ico", callback_on_click=clickCallback)
     except ValueError:
         print("Nothing to notify.")
-        f = open("notif.txt", 'w')
+        f = open(getPath("notif.txt"), 'w')
         f.write("False")
         f.close()
+    except Exception as e:
+        onFail(e)
     print("Sleeping...", end='\t\t')
     await asyncio.sleep(toWait)
 
