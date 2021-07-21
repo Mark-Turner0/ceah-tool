@@ -1,4 +1,5 @@
 from helpers import onFail, getPath
+import platform
 import wx
 import os
 import socket
@@ -20,6 +21,7 @@ class setup(wx.Frame):
         vert = wx.BoxSizer(wx.VERTICAL)
         label = " Please enter your unique code that was sent to you in the email with the download link: \n"
         error_label = "Error: Invalid code! Check that this is right and if so, please try again later."
+        mac_label = " Make sure to click the notification in the top right and toggle 'Allow notifications' when prompted to complete the setup. "
         vert.Add(wx.StaticText(self.panel, label=label), 0, wx.ALIGN_CENTER, 0)
         self.answerBox = wx.TextCtrl(self.panel)
         vert.Add(self.answerBox, 0, wx.ALIGN_CENTER, 0)
@@ -28,15 +30,22 @@ class setup(wx.Frame):
         vert.Add(self.submitButton, 0, wx.ALIGN_CENTER, 0)
         self.Bind(wx.EVT_BUTTON, self.onSubmit, id=self.submitButton.GetId())
         self.error = wx.StaticText(self.panel, label=error_label)
-        self.error.SetForegroundColour(wx.Colour(255, 0, 0))
+        if platform.system() == "Darwin":
+            self.error.SetLabel(mac_label)
         vert.Add(self.error, 0, wx.ALIGN_CENTER, 0)
         self.panel.SetSizer(vert)
         vert.Fit(self)
-        self.error.SetLabel("")
+        if platform.system() != "Darwin":
+            self.error.SetLabel("")
 
     def onSubmit(self, e):
         unique = self.answerBox.GetValue()
         if validate(unique):
+
+            if platform.system() == "Darwin":
+                import asyncio
+                asyncio.run(testNotif())
+
             self.error.SetLabel("")
             os.mkdir(getPath("DO_NOT_DELETE"))
             f = open(getPath("DO_NOT_DELETE/id.txt"), 'w')
@@ -44,7 +53,15 @@ class setup(wx.Frame):
             f.close()
             self.Close()
         else:
+            self.error.SetForegroundColour(wx.Colour(255, 0, 0))
             self.error.SetLabel("Error: Invalid code! Check that this is right and if so, please try again later.")
+
+
+async def testNotif():
+    from desktop_notifier import DesktopNotifier
+    notif = DesktopNotifier()
+    if not await notif.has_authorisation():
+        await notif.request_authorisation()
 
 
 def validate(unique):
