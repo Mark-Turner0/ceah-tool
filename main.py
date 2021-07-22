@@ -1,4 +1,4 @@
-from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath
+from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath, getUAC
 from screens import wxFirstRun
 from communicator import communicate
 import socket
@@ -7,6 +7,7 @@ import os
 import subprocess
 import json
 import asyncio
+import psutil
 
 
 def firstRun():
@@ -150,6 +151,47 @@ def main():
         else:
             installed["antivirus scanning"] = "unknown error " + str(error_code)
             raise Exception
+        print("[OK]")
+    except Exception as e:
+        onFail(e)
+
+    print("Checking access ctrls...", end='')
+    try:
+
+        if oper != "windows":
+            username = os.environ.get("USER")
+            adminCheck = subprocess.run(["id", "-G", username], capture_output=True).stdout.decode()[:-1]
+            if "80 " in adminCheck:
+                installed["isAdmin"] = True
+            else:
+                installed["isAdmin"] = False
+            installed["UAC"] = "unix"
+        else:
+            username = subprocess.run(["whoami"], capture_output=True).stdout.decode()[:-1]
+            print(username)
+            adminCheck = subprocess.run(["net", "user", username.split("\\")[-1]], capture_output=True).stdout.decode()[:-1]
+            if "*Administrators" in adminCheck:
+                installed["isAdmin"] = True
+            else:
+                installed["isAdmin"] = False
+            installed["UAC"] = getUAC()
+
+        processes = []
+        for proc in psutil.process_iter():
+            if oper == "windows" or proc.username() in [username, "root"]:
+                try:
+                    pusername = proc.username()
+                    try:
+                        if oper == "windows":
+                            proc.memory_maps()
+                        processes.append({proc.name(): pusername})
+                    except psutil.AccessDenied:
+                        if username.lower() not in pusername.lower():
+                            raise psutil.AccessDenied
+                        processes.append({proc.name(): "UAC Elevated"})
+                except psutil.AccessDenied:
+                    processes.append({proc.name(): "Windows System"})
+        installed["processes"] = processes
         print("[OK]")
     except Exception as e:
         onFail(e)
