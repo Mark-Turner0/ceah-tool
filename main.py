@@ -25,11 +25,11 @@ def firstRun():
 def main():
     print("[OK]")
     unique, is_first = firstRun()
-    installed = {}
+    data = {}
     print("Scanning OS...", end="\t\t")
     try:
         oper = platform.system().lower() if platform.system() != "Darwin" else "macos"
-        installed["os"] = oper
+        data["os"] = oper
         print("[OK]")
     except Exception as e:
         onFail(e, critical=True)
@@ -42,7 +42,7 @@ def main():
             osVer = platform.platform()
         else:  # Linux
             osVer = os.uname()[2]
-        installed["osVer"] = osVer
+        data["osVer"] = osVer
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -52,28 +52,29 @@ def main():
         if oper == "windows":
             import ctypes
             if ctypes.windll.shell32.IsUserAnAdmin():
-                installed["root"] = True
+                data["root"] = True
             else:
-                installed["root"] = False
+                data["root"] = False
         else:
             if not os.getuid():
-                installed["root"] = True
+                data["root"] = True
             else:
-                installed["root"] = False
+                data["root"] = False
         print("[OK]")
     except Exception as e:
         onFail(e)
 
     print("Scanning software...", end='\t')
     try:
+        data["software"] = {}
         if oper == "macos":
-            installed = getMacVer(installed)
+            data["software"] = getMacVer(data["software"])
         elif oper == "windows":
-            installed["firefox"] = getFirefox()
-            installed["google chrome"] = getChromium()
-            installed = getWindowsVer(installed)
+            data["software"]["firefox"] = getFirefox()
+            data["software"]["google chrome"] = getChromium()
+            data["software"] = getWindowsVer(data["software"])
         else:
-            installed = getLinuxVer(installed)
+            data["software"] = getLinuxVer(data["software"])
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -84,29 +85,29 @@ def main():
             state = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate"], capture_output=True).stdout.decode()[:-1]
             if "enabled" in state:
                 apps = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--listapps"], capture_output=True).stdout.decode()[:-1]
-                installed["firewall_enabled"] = True
-                installed["firewall_rules"] = apps
+                data["firewall_enabled"] = True
+                data["firewall_rules"] = apps
             else:
-                installed["firewall_enabled"] = False
+                data["firewall_enabled"] = False
         elif oper == "windows":
             state = subprocess.run(["netsh", "advfirewall", "show", "currentprofile"], capture_output=True).stdout.decode()[:-1]
             if "OFF" in state:
-                installed["firewall_enabled"] = False
+                data["firewall_enabled"] = False
             else:
-                installed["firewall_enabled"] = True
-                installed["firewall_rules"] = state
+                data["firewall_enabled"] = True
+                data["firewall_rules"] = state
         else:
             try:
-                if not installed["root"]:
+                if not data["root"]:
                     raise FileNotFoundError
                 state = subprocess.run(["ufw", "status", "verbose"], capture_output=True).stdout.decode()[:-1]
                 if "inactive" in state:
-                    installed["firewall_enabled"] = False
+                    data["firewall_enabled"] = False
                 else:
-                    installed["firewall_enabled"] = True
-                    installed["firewall_rules"] = state
+                    data["firewall_enabled"] = True
+                    data["firewall_rules"] = state
             except FileNotFoundError:
-                installed["firewall_enabled"] = "notdet"
+                data["firewall_enabled"] = "notdet"
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -119,7 +120,7 @@ def main():
         handshake = s.recv(4096).decode()
         if "Success" in handshake:
             internet = True
-            installed["ip_addr"] = s.getsockname()[0]
+            data["ip_addr"] = s.getsockname()[0]
             print("[OK]")
         else:
             print("Connection error.")
@@ -143,13 +144,13 @@ def main():
                 error_code = subprocess.run(["sh", "scripts/antivirustest.sh"]).returncode
 
         if error_code == 9009 or error_code == 127:
-            installed["antivirus scanning"] = "deleted / quarantined"
+            data["antivirus scanning"] = "deleted / quarantined"
         elif error_code == 9020 or error_code == 126:
-            installed["antivirus scanning"] = "caught on execution"
+            data["antivirus scanning"] = "caught on execution"
         elif error_code == 216 or error_code == 2:
-            installed["antivirus scanning"] = "failed"
+            data["antivirus scanning"] = "failed"
         else:
-            installed["antivirus scanning"] = "unknown error " + str(error_code)
+            data["antivirus scanning"] = "unknown error " + str(error_code)
             raise Exception
         print("[OK]")
     except Exception as e:
@@ -162,19 +163,18 @@ def main():
             username = os.environ.get("USER")
             adminCheck = subprocess.run(["id", "-G", username], capture_output=True).stdout.decode()[:-1]
             if "80 " in adminCheck:
-                installed["isAdmin"] = True
+                data["isAdmin"] = True
             else:
-                installed["isAdmin"] = False
-            installed["UAC"] = "unix"
+                data["isAdmin"] = False
+            data["UAC"] = "unix"
         else:
             username = subprocess.run(["whoami"], capture_output=True).stdout.decode()[:-1]
-            print(username)
             adminCheck = subprocess.run(["net", "user", username.split("\\")[-1]], capture_output=True).stdout.decode()[:-1]
             if "*Administrators" in adminCheck:
-                installed["isAdmin"] = True
+                data["isAdmin"] = True
             else:
-                installed["isAdmin"] = False
-            installed["UAC"] = getUAC()
+                data["isAdmin"] = False
+            data["UAC"] = getUAC()
 
         processes = []
         for proc in psutil.process_iter():
@@ -191,7 +191,7 @@ def main():
                         processes.append({proc.name(): "UAC Elevated"})
                 except psutil.AccessDenied:
                     processes.append({proc.name(): "Windows System"})
-        installed["processes"] = processes
+        data["processes"] = processes
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -203,10 +203,10 @@ def main():
         f.close()
         if notif == ["False"]:
             raise FileNotFoundError
-        installed["notification"] = notif
+        data["notification"] = notif
         print("[OK]")
     except FileNotFoundError:
-        installed["notification"] = False
+        data["notification"] = False
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -214,7 +214,7 @@ def main():
     print("Saving data...", end='\t\t')
     try:
         f = open(getPath("data.json"), 'w')
-        f.write(json.dumps(installed, indent='\t'))
+        f.write(json.dumps(data, indent='\t'))
         f.close()
         print("[OK]")
     except Exception as e:
