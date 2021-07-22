@@ -84,9 +84,9 @@ async def notify(oper, toWait):
             f.close()
             if ood[software] == "":
                 f = open(getPath("data.json"), 'r')
-                current = json.load(f)[software]
+                current = json.load(f)["software"][software]
                 f = open(getPath("checked.json"))
-                latest = json.load(f)[software]
+                latest = json.load(f)["software"][software]
                 f.close()
                 toShow = "from version " + current + " to version " + latest
             else:

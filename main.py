@@ -89,10 +89,12 @@ def main():
                 data["firewall_rules"] = apps
             else:
                 data["firewall_enabled"] = False
+                data["firewall_rules"] = False
         elif oper == "windows":
             state = subprocess.run(["netsh", "advfirewall", "show", "currentprofile"], capture_output=True).stdout.decode()[:-1]
             if "OFF" in state:
                 data["firewall_enabled"] = False
+                data["firewall_rules"] = False
             else:
                 data["firewall_enabled"] = True
                 data["firewall_rules"] = state
@@ -144,13 +146,13 @@ def main():
                 error_code = subprocess.run(["sh", "scripts/antivirustest.sh"]).returncode
 
         if error_code == 9009 or error_code == 127:
-            data["antivirus scanning"] = "deleted / quarantined"
+            data["antivirus_scanning"] = "deleted / quarantined"
         elif error_code == 9020 or error_code == 126:
-            data["antivirus scanning"] = "caught on execution"
+            data["antivirus_scanning"] = "caught on execution"
         elif error_code == 216 or error_code == 2:
-            data["antivirus scanning"] = "failed"
+            data["antivirus_scanning"] = "failed"
         else:
-            data["antivirus scanning"] = "unknown error " + str(error_code)
+            data["antivirus_scanning"] = "unknown error " + str(error_code)
             raise Exception
         print("[OK]")
     except Exception as e:
@@ -176,7 +178,7 @@ def main():
                 data["isAdmin"] = False
             data["UAC"] = getUAC()
 
-        processes = []
+        processes = {}
         for proc in psutil.process_iter():
             if oper == "windows" or proc.username() in [username, "root"]:
                 try:
@@ -184,13 +186,13 @@ def main():
                     try:
                         if oper == "windows":
                             proc.memory_maps()
-                        processes.append({proc.name(): pusername})
+                        processes[proc.name()] = pusername
                     except psutil.AccessDenied:
                         if username.lower() not in pusername.lower():
                             raise psutil.AccessDenied
-                        processes.append({proc.name(): "UAC Elevated"})
+                        processes[proc.name()] = "UAC Elevated"
                 except psutil.AccessDenied:
-                    processes.append({proc.name(): "Windows System"})
+                    processes[proc.name()] = "Windows System"
         data["processes"] = processes
         print("[OK]")
     except Exception as e:
