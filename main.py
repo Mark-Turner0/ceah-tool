@@ -182,7 +182,8 @@ def main():
                 try:
                     pusername = proc.username()
                     try:
-                        proc.memory_maps()
+                        if oper == "windows":
+                            proc.memory_maps()
                         processes.append({proc.name(): pusername})
                     except psutil.AccessDenied:
                         if username.lower() not in pusername.lower():
