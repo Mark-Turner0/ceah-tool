@@ -15,16 +15,16 @@ def firstRun():
         f = open(getPath("DO_NOT_DELETE/id.txt"), 'r')
         unique = f.read()
         f.close()
-        return unique, False
+        return unique
     except FileNotFoundError:
-        return wxFirstRun(), True
+        return wxFirstRun()
     except Exception as e:
         onFail(e, critical=True)
 
 
 def main():
     print("[OK]")
-    unique, is_first = firstRun()
+    unique = firstRun()
     data = {}
     print("Scanning OS...", end="\t\t")
     try:
@@ -132,7 +132,18 @@ def main():
 
     print("Testing antivirus...", end="\t")
     try:
-        if is_first and internet:
+        try:
+            f = open("counter.txt", 'r')
+            count = int(f.read())
+            f.close()
+        except FileNotFoundError:
+            count = 6
+        if count > 5:
+            refresh = True
+            count = 0
+        else:
+            refresh = False
+        if refresh and internet:
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustestnew.bat")
             else:
@@ -154,6 +165,10 @@ def main():
         else:
             data["antivirus_scanning"] = "unknown error " + str(error_code)
             raise Exception
+        count += 1
+        f = open("counter.txt", 'w')
+        f.write(str(count))
+        f.close()
         print("[OK]")
     except Exception as e:
         onFail(e)
