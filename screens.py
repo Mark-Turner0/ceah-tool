@@ -43,6 +43,9 @@ class setup(wx.Frame):
         if validate(unique):
 
             if platform.system() == "Darwin":
+                f = open(getPath("seinfeld.txt"), 'w')
+                f.write("This should make Apple's codesign verification fail before notification permissions are requested")
+                f.close()
                 import asyncio
                 asyncio.run(testNotif())
 
