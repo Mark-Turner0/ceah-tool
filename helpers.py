@@ -6,6 +6,26 @@ import random
 import json
 import asyncio
 import webbrowser
+import signal
+
+
+def macLooper(toWait):
+
+    def stop_loop():
+        loop.stop()
+
+    from external import _add_callback
+    from rubicon.objc.eventloop import EventLoopPolicy
+    from types import MethodType
+
+    asyncio.set_event_loop_policy(EventLoopPolicy())
+    loop = asyncio.get_event_loop()
+    loop.add_signal_handler(signal.SIGINT, stop_loop)
+    loop._add_callback = MethodType(_add_callback, loop)
+    try:
+        loop.run_until_complete(notify("macos", toWait))
+    except RuntimeError:
+        sys.exit(0)
 
 
 def getPath(path):

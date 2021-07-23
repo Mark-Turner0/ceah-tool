@@ -1,4 +1,4 @@
-from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath, getUAC
+from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath, getUAC, macLooper
 from screens import wxFirstRun
 from communicator import communicate
 import socket
@@ -239,11 +239,12 @@ def main():
 
     communicate(unique)
 
-    if oper == "macos":
-        from rubicon.objc.eventloop import EventLoopPolicy
-        asyncio.set_event_loop_policy(EventLoopPolicy())
+    TOWAIT = 3000
 
-    asyncio.get_event_loop().run_until_complete(notify(oper, 3000))
+    if oper == "macos":
+        macLooper(TOWAIT)
+    else:
+        asyncio.get_event_loop().run_until_complete(notify(oper, TOWAIT))
 
 
 if __name__ == '__main__':
