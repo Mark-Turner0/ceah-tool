@@ -7,5 +7,6 @@ pyinstaller --noconfirm "Cyber Essentials at Home.spec"
 chmod +x resources/postinstall
 cd dist
 rm -fr "Cyber Essentials at Home"
+codesign --entitlements ../resources/.entitlements -fs - "Cyber Essentials at Home.app"
 pkgbuild --identifier uk.markturner.ceah-tool --install-location /Applications --root ./ --component-plist ../resources/ceah-tool.plist --scripts ../resources --ownership preserve component.pkg
 productbuild --distribution ../resources/distribution.xml "./Cyber Essentials at Home.pkg"

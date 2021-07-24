@@ -82,9 +82,9 @@ def main():
     print("Getting firewall info...", end='')
     try:
         if oper == "macos":
-            state = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate"], capture_output=True).stdout.decode()[:-1]
+            state = subprocess.run("/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate", capture_output=True, shell=True).stdout.decode()[:-1]
             if "enabled" in state:
-                apps = subprocess.run(["/usr/libexec/ApplicationFirewall/socketfilterfw", "--listapps"], capture_output=True).stdout.decode()[:-1]
+                apps = subprocess.run("/usr/libexec/ApplicationFirewall/socketfilterfw --listapps", capture_output=True, shell=True).stdout.decode()[:-1]
                 data["firewall_enabled"] = True
                 data["firewall_rules"] = apps
             else:

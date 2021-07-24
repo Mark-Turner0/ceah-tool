@@ -7,6 +7,7 @@ import json
 import asyncio
 import webbrowser
 import signal
+import platform
 
 
 def macLooper(toWait):
@@ -30,7 +31,10 @@ def macLooper(toWait):
 
 def getPath(path):
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        current = os.path.abspath(os.path.dirname(__file__))
+        if platform.system() == "Darwin":
+            current = os.path.expanduser('~')
+        else:
+            current = os.path.abspath(os.path.dirname(__file__))
         return os.path.join(current, path)
     return path
 
