@@ -1,3 +1,2 @@
-curl https://secure.eicar.org/eicar.com -o CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY > /dev/null 2>&1
-chmod +x CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY > /dev/null 2>&1
-./CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY > /dev/null 2>&1
+curl https://secure.eicar.org/eicar.com -o "$1" > /dev/null 2>&1
+sh "$1" > /dev/null 2>&1

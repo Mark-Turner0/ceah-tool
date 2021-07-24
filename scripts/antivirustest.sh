@@ -1,1 +1,1 @@
-./CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY > /dev/null 2>&1
+"$1" > /dev/null 2>&1

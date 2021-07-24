@@ -31,7 +31,7 @@ def macLooper(toWait):
 
 def getPath(path):
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        if platform.system() == "Darwin":
+        if platform.system() == "Darwin" and not path.startswith("scripts/"):
             current = os.path.expanduser('~')
         else:
             current = os.path.abspath(os.path.dirname(__file__))

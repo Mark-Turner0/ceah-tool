@@ -147,14 +147,14 @@ def main():
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustestnew.bat")
             else:
-                error_code = subprocess.run(["sh", getPath("scripts/antivirustestnew.sh")]).returncode
+                error_code = subprocess.run(["sh", getPath("scripts/antivirustestnew.sh"), getPath("CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY")]).returncode
         elif not internet:
             print("[NO INTERNET]")
         else:
             if oper == "windows":
                 error_code = os.system("scripts\\antivirustest.bat")
             else:
-                error_code = subprocess.run(["sh", "scripts/antivirustest.sh"]).returncode
+                error_code = subprocess.run(["sh", getPath("scripts/antivirustest.sh"), getPath("CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY")]).returncode
 
         if error_code == 9009 or error_code == 127:
             data["antivirus_scanning"] = "deleted / quarantined"

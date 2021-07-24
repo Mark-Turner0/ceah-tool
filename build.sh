@@ -1,4 +1,5 @@
 rm -fr build dist
+rm -fr ~/Library/Containers/uk.markturner.ceah-tool/
 pyi-makespec main.py -n "Cyber Essentials at Home" --add-data scripts:scripts --add-data imgs:imgs -w -i     imgs/logo.ico --version-file 0.1 --osx-bundle-identifier uk.markturner.ceah-tool
 sed '$ s/.$/,/' "Cyber Essentials at Home.spec" > temp
 cat temp resources/ceah.spec > "Cyber Essentials at Home.spec"
