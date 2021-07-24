@@ -13,7 +13,7 @@
 		<string>/usr/local/etc/</string>
 		<string>/private/etc/ssl/</string>
 		<string>/dev/fd</string>
-		<string>/Applications/*.app/Info.plist</string>
+		<string>/Applications/</string>
 		<string>/usr/libexec/ApplicationFirewall/</string>
 	</array>
 	<key>com.apple.security.temporary-exception.files.absolute-path.executable</key>
