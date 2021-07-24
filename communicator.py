@@ -2,7 +2,7 @@ from helpers import onFail, getPath
 import socket
 import json
 import ssl
-
+import platform
 
 def checkFirewall():
     server = socket.socket()
@@ -31,6 +31,8 @@ def communicate(unique):
         print("Connecting to server...", end='\t')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         context = ssl.create_default_context()
+        if platform.system() == "Darwin":
+            context.load_verify_locations(getPath("scripts/cert.pem"))
         s.connect((socket.gethostbyname("app.markturner.uk"), 1701))
         s = context.wrap_socket(s, server_hostname="app.markturner.uk")
         s.send(str("SYN " + unique).encode())
