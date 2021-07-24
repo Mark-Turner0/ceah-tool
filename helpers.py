@@ -135,10 +135,8 @@ def getMacVer(installed):
         try:
             if i.endswith(".app"):
                 i = i[:-4]
-                f = open("/Applications/" + i + ".app/Contents/Info.plist", 'r')
-                content = f.read()
-                f.close()
-                version = re.search("<key>CFBundleShortVersionString</key>\n(.*)<string>(.*)<", content).groups()[1]
+                command = 'defaults read "/Applications/' + i + '.app/Contents/Info" CFBundleShortVersionString'
+                version = subprocess.check_output(command, shell=True).decode().strip()
                 installed[i.lower()] = version
         except Exception:
             installed[i.lower()] = False
