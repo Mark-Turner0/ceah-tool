@@ -6,11 +6,35 @@ import random
 import json
 import asyncio
 import webbrowser
+import signal
+import platform
+
+
+def macLooper(toWait):
+
+    def stop_loop():
+        loop.stop()
+
+    from external import _add_callback
+    from rubicon.objc.eventloop import EventLoopPolicy
+    from types import MethodType
+
+    asyncio.set_event_loop_policy(EventLoopPolicy())
+    loop = asyncio.get_event_loop()
+    loop.add_signal_handler(signal.SIGINT, stop_loop)
+    loop._add_callback = MethodType(_add_callback, loop)
+    try:
+        loop.run_until_complete(notify("macos", toWait))
+    except RuntimeError:
+        sys.exit(0)
 
 
 def getPath(path):
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        current = os.path.abspath(os.path.dirname(__file__))
+        if platform.system() == "Darwin" and not path.startswith("scripts/"):
+            current = os.path.expanduser('~')
+        else:
+            current = os.path.abspath(os.path.dirname(__file__))
         return os.path.join(current, path)
     return path
 
@@ -84,9 +108,9 @@ async def notify(oper, toWait):
             f.close()
             if ood[software] == "":
                 f = open(getPath("data.json"), 'r')
-                current = json.load(f)[software]
+                current = json.load(f)["software"][software]
                 f = open(getPath("checked.json"))
-                latest = json.load(f)[software]
+                latest = json.load(f)["software"][software]
                 f.close()
                 toShow = "from version " + current + " to version " + latest
             else:
@@ -115,10 +139,8 @@ def getMacVer(installed):
         try:
             if i.endswith(".app"):
                 i = i[:-4]
-                f = open("/Applications/" + i + ".app/Contents/Info.plist", 'r')
-                content = f.read()
-                f.close()
-                version = re.search("<key>CFBundleShortVersionString</key>\n(.*)<string>(.*)<", content).groups()[1]
+                command = 'defaults read "/Applications/' + i + '.app/Contents/Info" CFBundleShortVersionString'
+                version = subprocess.check_output(command, shell=True).decode().strip()
                 installed[i.lower()] = version
         except Exception:
             installed[i.lower()] = False

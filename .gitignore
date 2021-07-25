@@ -6,10 +6,11 @@ DO_NOT_DELETE/
 build/
 dist/
 ceah-tool/
-*.spec
+Cyber Essentials at Home.spec
 resources/*.exe
 CYBER_ESSENTIALS_AT_HOME_ANTIVIRUS_TEST_DONT_WORRY*
 errors.log
 checked.json
 notif.json
 notif.txt
+counter.txt
