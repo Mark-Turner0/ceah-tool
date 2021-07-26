@@ -39,7 +39,9 @@ def main():
         if oper == "macos":
             osVer = subprocess.run(["sw_vers", "-buildVersion"], capture_output=True).stdout.decode()[:-1]
         elif oper == "windows":
-            osVer = platform.platform()
+            import re
+            osVer = subprocess.run(["cmd", "/c", "ver"], capture_output=True).stdout.decode()[:-1]
+            osVer = re.search("\[Version (.*)\]", osVer).groups()[0]  # noqa: W605
         else:  # Linux
             osVer = os.uname()[2]
         data["osVer"] = osVer
