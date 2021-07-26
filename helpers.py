@@ -75,22 +75,25 @@ async def notify(oper, toWait):
     f.close()
     try:
         software = random.sample(ood.items(), 1)[0][0]
+        f = open(getPath("notif.txt"), 'w')
+        f.write(software)
+        f.close()
 
-        if software == "firewall":
+        if software == "firewall_enabled":
             title = "ENABLE YOUR FIREWALL!"
             toShow = "Firewalls can help keep you safe!"
             if ood[software] != "":
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
-        elif software == "firewall_incorrect":
+        elif software == "firewall_rules":
             title = "RECONFIGURE YOUR FIREWALL!"
             toShow = "A misconfigured firewall can be just as dangerous as not having one at all!"
             if ood[software] != "":
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
-        elif software == "antivirus":
-            title = "TURN ON YOUR ANTIVIRUS"
-            toShow = "Antivirus can protect you!"
+        elif software == "antivirus_scanning":
+            title = "TURN ON YOUR ANTIVIRUS!"
+            toShow = "Antivirus can protect you"
             if ood[software] != "":
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
@@ -100,12 +103,18 @@ async def notify(oper, toWait):
             if ood[software] != "":
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
+        elif software == "osVer":
+            title = "UPDATE " + oper.upper() + "!"
+            toShow = oper.capitalize() + " updates can include important security patches"
+            if ood[software][oper] != "":
+                toShow += " Not sure how to do this? Click here!"
+                url = ood[software][oper]
+        elif software == "positive":
+            title = "Well done for updating " + ood[software] + "! 👍"
+            toShow = "Up-to-date software is vital for cyber security!"
 
         else:
             title = "UPDATE " + software.upper()
-            f = open(getPath("notif.txt"), 'w')
-            f.write(software)
-            f.close()
             if ood[software] == "":
                 f = open(getPath("data.json"), 'r')
                 current = json.load(f)["software"][software]
@@ -116,6 +125,7 @@ async def notify(oper, toWait):
             else:
                 toShow = "Not sure how to do this? Click here!"
                 url = ood[software]
+
         if oper != "windows":
             from desktop_notifier import DesktopNotifier
             notify = DesktopNotifier(app_name="Cyber Essentials at Home", app_icon=getPath("imgs/logo.ico"))
