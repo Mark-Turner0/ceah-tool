@@ -111,7 +111,7 @@ def main():
                     data["firewall_enabled"] = True
                     data["firewall_rules"] = state
             except FileNotFoundError:
-                data["firewall_enabled"] = "notdet"
+                data["firewall_enabled"] = "nondet"
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -197,13 +197,14 @@ def main():
 
         processes = {}
         for proc in psutil.process_iter():
-            if oper == "windows" or proc.username() in [username, "root"]:
+            if oper == "windows" or proc.username() == "root":
                 try:
                     pusername = proc.username()
                     try:
                         if oper == "windows":
                             proc.memory_maps()
-                        processes[proc.name()] = pusername
+                        else:
+                            processes[proc.name()] = pusername
                     except psutil.AccessDenied:
                         if username.lower() not in pusername.lower():
                             raise psutil.AccessDenied
