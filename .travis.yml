@@ -9,6 +9,7 @@ jobs:
       script:
         - pip3 install -r requirements_mac.txt
         - sh build.sh
+        - shasum -a 256 "dist/Cyber-Essentials-at-Home.pkg"
       deploy:
         provider: releases
         api_key:
