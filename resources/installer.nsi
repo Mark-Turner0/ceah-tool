@@ -2,7 +2,7 @@
 
 ;Information
 Name "Cyber Essentials at Home Installer"
-OutFile "Cyber Essentials at Home Installer.exe"
+OutFile "Cyber-Essentials-at-Home-Installer.exe"
 Unicode True
 InstallDir "$LocalAppdata\Programs\Cyber Essentials at Home"
 
