@@ -112,9 +112,26 @@ async def notify(oper, toWait):
             if ood[software][oper] != "":
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software][oper]
+        elif software == "root":
+            title = "THIS SOFTWARE DOES NOT NEED TO BE RUNNING AS AN ADMINISTRATOR!"
+            toShow = "Just run it as a normal user!"
+            if ood[softwaare] != "":
+                toShow = " Not sure how to do this? Click here!"
+                url = ood[software]
+
         elif software == "positive":
-            title = "WELL DONE FOR UPDATING " + ood[software].upper() + "! 👍"
-            toShow = "Up-to-date software is vital for cyber security!"
+            if ood[software] == "osVer":
+                title = "NICE WORK UPDATING " + oper.upper() + "! 🎉"
+                toShow = "Keep it up!"
+            elif ood[software] == "antivirus_scanning":
+                title = "GOOD JOB ENABLING ANTIVIRUS! 🍾"
+                toShow = "Make sure you leave it on!"
+            elif ood[software] == "firewall_enabled":
+                title = "YOUR FIREWALL IS NOW UP AND RUNNING! 🔥"
+                toShow = "Be smart about what apps you allow through!"
+            else:
+                title = "WELL DONE FOR UPDATING " + ood[software].upper() + "! 👍"
+                toShow = "Up-to-date software is vital for cyber security!"
 
         else:
             title = "UPDATE " + software.upper()
