@@ -4,6 +4,7 @@ import json
 import ssl
 import platform
 
+
 def checkFirewall():
     server = socket.socket()
     server.bind(("0.0.0.0", 1701))
