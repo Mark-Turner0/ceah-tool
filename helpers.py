@@ -74,7 +74,10 @@ async def notify(oper, toWait):
     ood = json.load(f)
     f.close()
     try:
-        software = random.sample(ood.items(), 1)[0][0]
+        if "positive" in ood:
+            software = "positive"
+        else:
+            software = random.sample(ood.items(), 1)[0][0]
         f = open(getPath("notif.txt"), 'w')
         f.write(software)
         f.close()
@@ -110,7 +113,7 @@ async def notify(oper, toWait):
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software][oper]
         elif software == "positive":
-            title = "Well done for updating " + ood[software] + "! 👍"
+            title = "WELL DONE FOR UPDATING " + ood[software].upper() + "! 👍"
             toShow = "Up-to-date software is vital for cyber security!"
 
         else:
