@@ -7,7 +7,7 @@ Unicode True
 InstallDir "$LocalAppdata\Programs\Cyber Essentials at Home"
 
 ;License text
-LicenseData "license.html"
+LicenseData "license.txt"
 
 ;Icons
 !define MUI_ICON "..\imgs\logo.ico"
