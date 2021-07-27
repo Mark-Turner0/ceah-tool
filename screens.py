@@ -65,7 +65,7 @@ async def testNotif():
 
 
 def validate(unique):
-    if len(unique) != 7:
+    if len(unique) != 10:
         return False
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     context = ssl.create_default_context()
