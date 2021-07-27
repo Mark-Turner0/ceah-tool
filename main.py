@@ -39,7 +39,9 @@ def main():
         if oper == "macos":
             osVer = subprocess.run(["sw_vers", "-buildVersion"], capture_output=True).stdout.decode()[:-1]
         elif oper == "windows":
-            osVer = platform.platform()
+            import re
+            osVer = subprocess.run(["cmd", "/c", "ver"], capture_output=True).stdout.decode()[:-1]
+            osVer = re.search("\[Version (.*)\]", osVer).groups()[0]  # noqa: W605
         else:  # Linux
             osVer = os.uname()[2]
         data["osVer"] = osVer
@@ -109,7 +111,7 @@ def main():
                     data["firewall_enabled"] = True
                     data["firewall_rules"] = state
             except FileNotFoundError:
-                data["firewall_enabled"] = "notdet"
+                data["firewall_enabled"] = "nondet"
         print("[OK]")
     except Exception as e:
         onFail(e)
@@ -195,13 +197,14 @@ def main():
 
         processes = {}
         for proc in psutil.process_iter():
-            if oper == "windows" or proc.username() in [username, "root"]:
+            if oper == "windows" or proc.username() == "root":
                 try:
                     pusername = proc.username()
                     try:
                         if oper == "windows":
                             proc.memory_maps()
-                        processes[proc.name()] = pusername
+                        else:
+                            processes[proc.name()] = pusername
                     except psutil.AccessDenied:
                         if username.lower() not in pusername.lower():
                             raise psutil.AccessDenied
