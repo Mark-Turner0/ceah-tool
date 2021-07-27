@@ -115,7 +115,7 @@ async def notify(oper, toWait):
         elif software == "root":
             title = "THIS SOFTWARE DOES NOT NEED TO BE RUNNING AS AN ADMINISTRATOR!"
             toShow = "Just run it as a normal user!"
-            if ood[softwaare] != "":
+            if ood[software] != "":
                 toShow = " Not sure how to do this? Click here!"
                 url = ood[software]
 
