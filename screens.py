@@ -1,3 +1,6 @@
+# -- THIS CODE IS LICENSED UNDER THE GPLv3 LICENSE, (c) Mark Turner 2021 --
+# More information can be found in /LICENSE
+
 from helpers import onFail, getPath
 import platform
 import wx
@@ -65,7 +68,7 @@ async def testNotif():
 
 
 def validate(unique):
-    if len(unique) != 7:
+    if len(unique) != 10:
         return False
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     context = ssl.create_default_context()

@@ -1,3 +1,6 @@
+# -- THIS CODE IS LICENSED UNDER THE GPLv3 LICENSE, (c) Mark Turner 2021 --
+# More information can be found in /LICENSE
+
 from helpers import getMacVer, getLinuxVer, getWindowsVer, getChromium, getFirefox, notify, onFail, getPath, getUAC, macLooper
 from screens import wxFirstRun
 from communicator import communicate

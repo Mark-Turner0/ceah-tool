@@ -1,3 +1,6 @@
+# -- THIS CODE IS LICENSED UNDER THE GPLv3 LICENSE, (c) Mark Turner 2021i --
+# More information can be found in /LICENSE
+
 import os
 import re
 import sys
