@@ -37,7 +37,7 @@ RequestExecutionLevel user
 
 ;Finish Page settings
 !define MUI_FINISHPAGE_TITLE "Thank you for installing!"
-!define MUI_FINISHPAGE_TEXT "On the next screen you will be asked to enter your unique 7 digit code that you received with your invite to download the software."
+!define MUI_FINISHPAGE_TEXT "On the next screen you will be asked to enter your unique 10 digit code that you received with your email invite to download the software."
 !define MUI_FINISHPAGE_BUTTON "Next >"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\Cyber Essentials at Home.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Keep this box checked to go onto the next stage"
@@ -50,7 +50,7 @@ RequestExecutionLevel user
 
 ;Installation pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "license.html"
+!insertmacro MUI_PAGE_LICENSE "license.txt"
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
