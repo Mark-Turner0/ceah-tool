@@ -13,9 +13,9 @@ FOR USE IN THIS DISSERTATION ONLY, THE FOLLOWING DATA WILL BE COLLECTED FROM YOU
 	- The privilege level of your user account
 	- Your activity with https://app.markturner.uk
 
-This information will be processed up until the 3rd September 2021, at which point the data will be deleted. YOU WILL BE INFORMED WHEN THIS HAPPENS. This information will be linked to the email address you provided when filling out the survey and your survey responses. No other personally identifying information is collected, and your identity will be protected in the dissertation. This information is stored using MongoDB Atlas which features encryption at rest. All data is kept in accordance with the GDPR.
+This information will be processed and used both for the dissertation and to improve the software up until the 3rd September 2021, at which point the data will be deleted. YOU WILL BE TOLD WHEN THIS HAPPENS. This information will be linked to the email address you provided when filling out the survey and your survey responses. No other personally identifiable information is collected, and your identity will be protected in the dissertation. This information is stored using MongoDB Atlas which features encryption over the wire and on disk. All data is kept in accordance with the GDPR.
 
-You may withdraw from this study at any time without giving any reason. In Windows, this software can be uninstalled by using the "Add or remove programs" feature, and on macOS, the Application can be deleted by dragging it to the trash can icon.
+You may withdraw from this study at any time without giving any reason. On Windows, this software can be uninstalled by using the "Add or remove programs" feature, and on macOS, the Application can be deleted by dragging it to the trash can icon.
 
 ----------------------------------------------------------------------------
 
