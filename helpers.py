@@ -104,11 +104,8 @@ async def notify(oper, toWait):
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
         elif software == "access controls":
-            title = "CHECK YOUR ACCESS CONTROLS!"
-            toShow = "Proper configuration can prevent bad things from happening!"
-            if ood[software] != "":
-                toShow += " Not sure how to do this? Click here!"
-                url = ood[software]
+            title = "Does " + ood[software] + "NEED to be running with elevated privileges?"
+            toShow = "If this program was malicious, you'd be giving it all the power of an administrator!"
         elif software == "osVer":
             title = "UPDATE " + oper.upper() + "!"
             toShow = oper.capitalize() + " updates can include important security patches"
@@ -116,11 +113,16 @@ async def notify(oper, toWait):
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software][oper]
         elif software == "root":
-            title = "THIS SOFTWARE DOES NOT NEED TO BE RUNNING AS AN ADMINISTRATOR!"
-            toShow = "Just run it as a normal user!"
+            title = "CYBER ESSENTIALS AT HOME DOES NOT NEED TO BE RUNNING AS AN ADMINISTRATOR!"
+            toShow = "Just run it as a normal user (principle of least privilege)!"
             if ood[software] != "":
-                toShow = " Not sure how to do this? Click here!"
+                toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
+        elif software == "UAC":
+            title = "CHANGE YOUR USER ACCESS CONTROLS!"
+            toShow = "They're too weak which could put your computer at risk!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
 
         elif software == "positive":
             if ood[software] == "osVer":
