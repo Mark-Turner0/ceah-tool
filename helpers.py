@@ -104,8 +104,8 @@ async def notify(oper, toWait):
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
         elif software == "access controls":
-            title = "Does " + ood[software] + "NEED to be running with elevated privileges?"
-            toShow = "If this program was malicious, you'd be giving it all the power of an administrator!"
+            title = "CHECK YOUR ACCESS CONTROLS!"
+            toShow = "Does " + ood[software] + " NEED to be running with elevated privileges?"
         elif software == "osVer":
             title = "UPDATE " + oper.upper() + "!"
             toShow = oper.capitalize() + " updates can include important security patches"
@@ -113,8 +113,8 @@ async def notify(oper, toWait):
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software][oper]
         elif software == "root":
-            title = "CYBER ESSENTIALS AT HOME DOES NOT NEED TO BE RUNNING AS AN ADMINISTRATOR!"
-            toShow = "Just run it as a normal user (principle of least privilege)!"
+            title = "THIS TOOL DOES NOT NEED TO BE RUN AS ADMINISTRATOR!"
+            toShow = "Just run Cyber Essentials at Home as a normal user (principle of least privilege)!"
             if ood[software] != "":
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
@@ -134,6 +134,9 @@ async def notify(oper, toWait):
             elif ood[software] == "firewall_enabled":
                 title = "YOUR FIREWALL IS NOW UP AND RUNNING! 🔥"
                 toShow = "Be smart about what apps you allow through!"
+            elif ood[software] == "UAC":
+                title = "YOUR USER ACCESS CONTROLS ARE NOW MUCH BETTER! 😊"
+                toShow = "You will now be more effectively warned when a program tries to run with administrator privileges"
             else:
                 title = "WELL DONE FOR UPDATING " + ood[software].upper() + "! 👍"
                 toShow = "Up-to-date software is vital for cyber security!"
