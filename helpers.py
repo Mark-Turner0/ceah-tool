@@ -119,7 +119,7 @@ async def notify(oper, toWait):
                 toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
         elif software == "UAC":
-            title = "CHANGE YOUR USER ACCESS CONTROLS!"
+            title = "CHANGE YOUR USER ACCOUNT CONTROLS!"
             toShow = "They're too weak which could put your computer at risk!"
             if ood[software] != "":
                 toShow += " Not sure how to do this? Click here!"
