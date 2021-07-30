@@ -21,6 +21,7 @@ class setup(wx.Frame):
         self.Show(True)
 
     def initUI(self):
+        self.SetIcon(wx.Icon("imgs/logo.ico"))
         vert = wx.BoxSizer(wx.VERTICAL)
         label = " Please enter your unique code that was sent to you in the email with the download link: \n"
         error_label = "Error: Invalid code! Check that this is right and if so, please try again later."
