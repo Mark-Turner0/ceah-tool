@@ -101,7 +101,7 @@ async def notify(oper, toWait):
             title = "TURN ON YOUR ANTIVIRUS!"
             toShow = "Antivirus can protect you"
             if ood[software] != "":
-                toShow += " Not sure how to do this? Click here!"
+                toShow += ". Not sure how to do this? Click here!"
                 url = ood[software]
         elif software == "access controls":
             title = "CHECK YOUR ACCESS CONTROLS!"
@@ -110,7 +110,7 @@ async def notify(oper, toWait):
             title = "UPDATE " + oper.upper() + "!"
             toShow = oper.capitalize() + " updates can include important security patches"
             if ood[software][oper] != "":
-                toShow += " Not sure how to do this? Click here!"
+                toShow += ". Not sure how to do this? Click here!"
                 url = ood[software][oper]
         elif software == "root":
             title = "THIS TOOL DOES NOT NEED TO BE RUN AS ADMINISTRATOR!"
