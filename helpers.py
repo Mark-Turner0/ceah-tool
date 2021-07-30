@@ -227,6 +227,8 @@ def getWindowsVer(installed):
                 name = i[0].split(": ")[-1]
                 if name != "":
                     version = i[1].split(": ")[-1]
+                    name = re.sub("[^A-Za-z+ ]+", "", name).strip()
+                    name = re.sub(" +", " ", name)
                     installed[name.lower()] = version
             except IndexError:
                 pass
