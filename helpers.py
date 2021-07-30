@@ -211,12 +211,11 @@ def getLinuxVer(installed):
 
 
 def getWindowsVer(installed):
-    commands = ["""
-                powershell.exe Get-ItemProperty
+    commands = ["""powershell.exe -NonInteractive -NoLogo -NoProfile -WindowStyle hidden Get-ItemProperty
                 HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
                 Format-List -Property DisplayName, DisplayVersion""",
 
-                """powershell.exe Get-ItemProperty
+                """powershell.exe -NonInteractive -NoLogo -NoProfile -WindowStyle hidden Get-ItemProperty
                 HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
                 Format-List -Property DisplayName, DisplayVersion"""]
 
@@ -248,7 +247,7 @@ def getFirefox():
 
 
 def getUAC():
-    command = "powershell.exe Get-ItemProperty -Path HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
+    command = "powershell.exe -NonInteractive -NoLogo -NoProfile -WindowStyle hidden Get-ItemProperty -Path HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
     results = subprocess.run(command.split(), capture_output=True).stdout.decode()[:-1].split("\r\n")[2:-10]
     uac = {}
     for i in results:
