@@ -1,0 +1,88 @@
+name: Deploy
+on:
+  push:
+    branches: master
+
+  workflow_dispatch:
+
+jobs:
+  setup_release:
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: v0.2
+        id: create_release
+        with:
+          tag_name: ${{ env.TAG }}
+          release_name: Release ${{ env.TAG }}
+
+  build_deploy_Windows:
+    needs: setup_release
+    runs-on: windows-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      # Runs a set of commands using the runners shell
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements_windows.txt
+      - name: Install PyInstaller
+        run: python -m pip install pyinstaller
+      - name: Install NSIS
+        run: choco install nsis
+      - name: Create executable
+        run: pyinstaller main.py -n "Cyber Essentials at Home" --add-data "scripts;scripts" --add-data "imgs;imgs" -w -i imgs/logo.ico
+      - name: Make NSIS Installer
+        run: |
+          cd resources
+          makensis installer.nsi
+      - name: Display Checksum
+        run: Get-FileHash "resources\\Cyber-Essentials-at-Home-Installer.exe" -Algorithm SHA256
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.setup_release.outputs.upload_url }}
+          asset_path: "resources\\Cyber-Essentials-at-Home-Installer.exe"
+          asset_name: "Cyber-Essentials-at-Home-Installer.exe"
+          asset_content_type: application/vnd.microsoft.portable-executable
+
+  build_deploy_macOS:
+    needs: setup_release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Upgrade pip
+        run: pip3 install --upgrade pip
+      - name: Install dependancies
+        run: pip3 install -r requirements_mac.txt
+      - name: Install PyInstaller
+        run: pip3 install pyinstaller
+      - name: Build and sign
+        run: sh build.sh
+      - name: Display Checksum
+        run: shasum -a 256 "dist/Cyber-Essentials-at-Home.pkg"
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.setup_release.outputs.upload_url }}
+          asset_path: "dist/Cyber-Essentials-at-Home.pkg"
+          asset_name: "Cyber-Essentials-at-Home.pkg"
+          asset_content_type: application/x-newton-compatible-pkg
