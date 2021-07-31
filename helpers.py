@@ -101,26 +101,28 @@ async def notify(oper, toWait):
             title = "TURN ON YOUR ANTIVIRUS!"
             toShow = "Antivirus can protect you"
             if ood[software] != "":
-                toShow += " Not sure how to do this? Click here!"
+                toShow += ". Not sure how to do this? Click here!"
                 url = ood[software]
         elif software == "access controls":
             title = "CHECK YOUR ACCESS CONTROLS!"
-            toShow = "Proper configuration can prevent bad things from happening!"
-            if ood[software] != "":
-                toShow += " Not sure how to do this? Click here!"
-                url = ood[software]
+            toShow = "Does " + ood[software] + " NEED to be running with elevated privileges?"
         elif software == "osVer":
             title = "UPDATE " + oper.upper() + "!"
             toShow = oper.capitalize() + " updates can include important security patches"
             if ood[software][oper] != "":
-                toShow += " Not sure how to do this? Click here!"
+                toShow += ". Not sure how to do this? Click here!"
                 url = ood[software][oper]
         elif software == "root":
-            title = "THIS SOFTWARE DOES NOT NEED TO BE RUNNING AS AN ADMINISTRATOR!"
-            toShow = "Just run it as a normal user!"
+            title = "THIS TOOL DOES NOT NEED TO BE RUN AS ADMINISTRATOR!"
+            toShow = "Just run Cyber Essentials at Home as a normal user (principle of least privilege)!"
             if ood[software] != "":
-                toShow = " Not sure how to do this? Click here!"
+                toShow += " Not sure how to do this? Click here!"
                 url = ood[software]
+        elif software == "UAC":
+            title = "CHANGE YOUR USER ACCOUNT CONTROLS!"
+            toShow = "They're too weak which could put your computer at risk!"
+            if ood[software] != "":
+                toShow += " Not sure how to do this? Click here!"
 
         elif software == "positive":
             if ood[software] == "osVer":
@@ -132,6 +134,12 @@ async def notify(oper, toWait):
             elif ood[software] == "firewall_enabled":
                 title = "YOUR FIREWALL IS NOW UP AND RUNNING! 🔥"
                 toShow = "Be smart about what apps you allow through!"
+            elif ood[software] == "UAC":
+                title = "YOUR USER ACCESS CONTROLS ARE NOW MUCH BETTER! 😊"
+                toShow = "You will now be more effectively warned when a program tries to run with administrator privileges"
+            elif ood[software] == "firewall_rules":
+                title = "YOU'VE RECONFIGURED YOUR FIREWALL WELL! 🧱"
+                toShow = "You are now much better protected!"
             else:
                 title = "WELL DONE FOR UPDATING " + ood[software].upper() + "! 👍"
                 toShow = "Up-to-date software is vital for cyber security!"
@@ -206,12 +214,11 @@ def getLinuxVer(installed):
 
 
 def getWindowsVer(installed):
-    commands = ["""
-                powershell.exe Get-ItemProperty
+    commands = ["""powershell.exe -NonInteractive -NoLogo -NoProfile -WindowStyle hidden Get-ItemProperty
                 HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
                 Format-List -Property DisplayName, DisplayVersion""",
 
-                """powershell.exe Get-ItemProperty
+                """powershell.exe -NonInteractive -NoLogo -NoProfile -WindowStyle hidden Get-ItemProperty
                 HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
                 Format-List -Property DisplayName, DisplayVersion"""]
 
@@ -223,6 +230,8 @@ def getWindowsVer(installed):
                 name = i[0].split(": ")[-1]
                 if name != "":
                     version = i[1].split(": ")[-1]
+                    name = re.sub("[^A-Za-z+ ]+", "", name).strip()
+                    name = re.sub(" +", " ", name)
                     installed[name.lower()] = version
             except IndexError:
                 pass
@@ -243,7 +252,7 @@ def getFirefox():
 
 
 def getUAC():
-    command = "powershell.exe Get-ItemProperty -Path HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
+    command = "powershell.exe -NonInteractive -NoLogo -NoProfile -WindowStyle hidden Get-ItemProperty -Path HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
     results = subprocess.run(command.split(), capture_output=True).stdout.decode()[:-1].split("\r\n")[2:-10]
     uac = {}
     for i in results:

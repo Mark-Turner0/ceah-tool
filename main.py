@@ -209,7 +209,7 @@ def main():
                         else:
                             processes[proc.name()] = pusername
                     except psutil.AccessDenied:
-                        if username.lower() not in pusername.lower():
+                        if username.lower() not in pusername.lower() and pusername.lower() not in username.lower():
                             raise psutil.AccessDenied
                         processes[proc.name()] = "UAC Elevated"
                 except psutil.AccessDenied:

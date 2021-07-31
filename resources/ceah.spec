@@ -1,3 +1,4 @@
              info_plist={
-                "LSUIElement": True
+                "LSUIElement": True,
+		"CFBundleShortVersionString": "1.0"
              })
