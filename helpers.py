@@ -137,6 +137,9 @@ async def notify(oper, toWait):
             elif ood[software] == "UAC":
                 title = "YOUR USER ACCESS CONTROLS ARE NOW MUCH BETTER! 😊"
                 toShow = "You will now be more effectively warned when a program tries to run with administrator privileges"
+            elif ood[software] == "firewall_rules":
+                title = "YOU'VE RECONFIGURED YOUR FIREWALL WELL! 🧱"
+                toShow = "You are now much better protected!"
             else:
                 title = "WELL DONE FOR UPDATING " + ood[software].upper() + "! 👍"
                 toShow = "Up-to-date software is vital for cyber security!"
