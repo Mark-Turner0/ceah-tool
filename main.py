@@ -75,8 +75,14 @@ def main():
         if oper == "macos":
             data["software"] = getMacVer(data["software"])
         elif oper == "windows":
-            data["software"]["firefox"] = getFirefox()
-            data["software"]["google chrome"] = getChromium()
+            try:
+                data["software"]["firefox"] = getFirefox()
+            except Exception:
+                pass
+            try:
+                data["software"]["google chrome"] = getChromium()
+            except Exception:
+                pass
             data["software"] = getWindowsVer(data["software"])
         else:
             data["software"] = getLinuxVer(data["software"])
