@@ -15,7 +15,7 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: v1.0
+          TAG: v1.1
         id: create_release
         with:
           tag_name: ${{ env.TAG }}
